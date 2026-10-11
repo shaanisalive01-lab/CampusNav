@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <title>CampusNav | Timetable</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        (() => {
+            const theme = localStorage.getItem("campusnav-theme");
+            if (theme) document.documentElement.dataset.theme = theme;
+        })();
+    </script>
+
+    <style>
+        :root {
+            --tt-bg: #f5f7fb;
+            --tt-surface: #ffffff;
+            --tt-text: #172033;
+            --tt-muted: #748096;
+            --tt-border: #e4e9f1;
+            --tt-accent: #4169e1;
+            --tt-accent-soft: #edf2ff;
+            --tt-shadow: 0 12px 35px rgba(20, 35, 65, 0.06);
+        }
+
+        [data-theme="dark"] {
+            --tt-bg: #0b1220;
+            --tt-surface: #131e2f;
+            --tt-text: #edf3ff;
+            --tt-muted: #9aa9c0;
+            --tt-border: #28364a;
+            --tt-accent: #86a5ff;
+            --tt-accent-soft: #202f4b;
+            --tt-shadow: 0 12px 35px rgba(0, 0, 0, 0.16);
+        }
+
+        body {
+            background: var(--tt-bg);
+            color: var(--tt-text);
+        }
+
+        .tt-main {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 42px 0 90px;
+        }
+
+        .tt-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .tt-eyebrow {
+            margin: 0 0 9px;
+            color: var(--tt-accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+
+        .tt-heading h1 {
+            margin: 0;
+            color: var(--tt-text);
+            font-size: clamp(30px, 4vw, 42px);
+            letter-spacing: -1.5px;
+            line-height: 1.12;
+        }
+
+        .tt-heading p:not(.tt-eyebrow) {
+            margin: 10px 0 0;
+            color: var(--tt-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .tt-today {
+            flex-shrink: 0;
+            padding: 10px 14px;
+            border: 1px solid var(--tt-border);
+            border-radius: 12px;
+            background: var(--tt-surface);
+            color: var(--tt-muted);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .tt-next {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 24px;
+            align-items: center;
+            padding: 28px;
+            margin-bottom: 34px;
+            border: 1px solid var(--tt-border);
+            border-radius: 20px;
+            background: var(--tt-surface);
+            box-shadow: var(--tt-shadow);
+        }
+
+        .tt-next::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: var(--tt-accent);
+        }
+
+        .tt-next-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--tt-accent);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .tt-next-label::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #37bd87;
+            box-shadow: 0 0 0 4px rgba(55, 189, 135, 0.12);
+        }
+
+        .tt-next h2 {
+            margin: 12px 0 7px;
+            color: var(--tt-text);
+            font-size: clamp(21px, 3vw, 28px);
+            letter-spacing: -0.7px;
+        }
+
+        .tt-next p {
+            margin: 0;
+            color: var(--tt-muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .tt-next-content {
+            min-width: 0;
+        }
+
+        #nextClass {
+            margin-top: 12px;
+            color: var(--tt-text);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        #nextClass:empty::after {
+            content: "Your next class will appear here.";
+            color: var(--tt-muted);
+        }
+
+        .tt-next-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 44px;
+            padding: 0 17px;
+            border: 0;
+            border-radius: 12px;
+            background: var(--tt-accent);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 750;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: transform 160ms ease, opacity 160ms ease;
+        }
+
+        [data-theme="dark"] .tt-next-action {
+            color: #101a2b;
+        }
+
+        .tt-next-action:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        .tt-section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .tt-section-heading h2 {
+            margin: 0;
+            color: var(--tt-text);
+            font-size: 23px;
+            letter-spacing: -0.7px;
+        }
+
+        .tt-section-heading p {
+            margin: 7px 0 0;
+            color: var(--tt-muted);
+            font-size: 13px;
+        }
+
+        .tt-count {
+            color: var(--tt-muted);
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .tt-weekdays {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 2px 2px 12px;
+            margin-bottom: 12px;
+            scrollbar-width: thin;
+        }
+
+        .tt-day {
+            flex: 0 0 auto;
+            min-width: 76px;
+            padding: 11px 14px;
+            border: 1px solid var(--tt-border);
+            border-radius: 12px;
+            background: var(--tt-surface);
+            color: var(--tt-muted);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            cursor: pointer;
+            transition: background 160ms ease, color 160ms ease,
+                        border-color 160ms ease, transform 160ms ease;
+        }
+
+        .tt-day:hover {
+            transform: translateY(-1px);
+            border-color: var(--tt-accent);
+        }
+
+        .tt-day.active {
+            border-color: var(--tt-accent);
+            background: var(--tt-accent-soft);
+            color: var(--tt-accent);
+        }
+
+        .tt-list-shell {
+            overflow: hidden;
+            border: 1px solid var(--tt-border);
+            border-radius: 18px;
+            background: var(--tt-surface);
+            box-shadow: var(--tt-shadow);
+        }
+
+        #timetableList {
+            display: grid;
+            gap: 0;
+            padding: 4px 22px;
+        }
+
+        #timetableList > * {
+            min-width: 0;
+            padding: 19px 4px;
+            border-bottom: 1px solid var(--tt-border);
+            color: var(--tt-text);
+            transition: background 160ms ease;
+        }
+
+        #timetableList > *:last-child {
+            border-bottom: 0;
+        }
+
+        #timetableList > *:hover {
+            background: var(--tt-accent-soft);
+        }
+
+        #timetableList h3,
+        #timetableList h4 {
+            color: var(--tt-text);
+        }
+
+        #timetableList p,
+        #timetableList small {
+            color: var(--tt-muted);
+        }
+
+        #timetableList a {
+            color: var(--tt-accent);
+        }
+
+        .tt-empty {
+            padding: 35px 20px;
+            text-align: center;
+            color: var(--tt-muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .tt-empty strong {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--tt-text);
+            font-size: 15px;
+        }
+
+        .tt-note {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            margin-top: 20px;
+            padding: 15px 17px;
+            border: 1px solid var(--tt-border);
+            border-radius: 13px;
+            color: var(--tt-muted);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .tt-note span {
+            font-size: 17px;
+        }
+
+        .tt-note strong {
+            color: var(--tt-text);
+        }
+
+        .tt-main button:focus-visible,
+        .tt-main a:focus-visible {
+            outline: 3px solid var(--tt-accent);
+            outline-offset: 3px;
+        }
+
+        .mobile-bottom-nav a[href="timetable.html"] {
+            color: var(--tt-accent);
+        }
+
+        @media (max-width: 650px) {
+            .tt-main {
+                width: min(100% - 28px, 560px);
+                padding-top: 28px;
+            }
+
+            .tt-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 14px;
+                margin-bottom: 22px;
+            }
+
+            .tt-heading h1 {
+                font-size: 32px;
+            }
+
+            .tt-today {
+                padding: 8px 11px;
+            }
+
+            .tt-next {
+                grid-template-columns: 1fr;
+                gap: 18px;
+                padding: 22px 19px;
+                border-radius: 17px;
+            }
+
+            .tt-next-action {
+                width: 100%;
+            }
+
+            .tt-section-heading h2 {
+                font-size: 21px;
+            }
+
+            #timetableList {
+                padding: 2px 14px;
+            }
+
+            #timetableList > * {
+                padding: 16px 2px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <a class="brand" href="index.html" style="text-decoration:none;color:inherit">
+        <span class="brand-mark">C</span>
+        <span>CampusNav</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="map.html">Map</a>
+        <a href="timetable.html" class="active">Timetable</a>
+        <a href="explore.html">Explore</a>
+        <a href="events.html">Events</a>
+        <a href="groups.html">Groups</a>
+    </nav>
+
+    <button
+        id="themeToggle"
+        class="theme-toggle"
+        type="button"
+        aria-label="Toggle colour theme"
+    >☾</button>
+</header>
+
+<main class="tt-main">
+
+    <section class="tt-heading">
+        <div>
+            <p class="tt-eyebrow">YOUR ACADEMIC DAY</p>
+            <h1>Class schedule<span style="color:var(--tt-accent)">.</span></h1>
+            <p>Your classes, room details, and the next place you need to be.</p>
+        </div>
+
+        <div class="tt-today" id="todayLabel">Loading date…</div>
+    </section>
+
+    <section class="tt-next" aria-labelledby="nextHeading">
+        <div class="tt-next-content">
+            <span class="tt-next-label">Your schedule at a glance</span>
+            <h2 id="nextHeading">Up next</h2>
+            <p>Keep your next class one tap away.</p>
+            <div id="nextClass" aria-live="polite"></div>
+        </div>
+
+        <a class="tt-next-action" id="nextClassNavigate" href="map.html">
+            <span>⌖</span> Open campus map
+        </a>
+    </section>
+
+    <section aria-labelledby="scheduleHeading">
+        <div class="tt-section-heading">
+            <div>
+                <h2 id="scheduleHeading">Your timetable</h2>
+                <p>Choose a day to narrow down your schedule.</p>
+            </div>
+            <span class="tt-count" id="filterStatus">All classes</span>
+        </div>
+
+        <div class="tt-weekdays" role="group" aria-label="Filter timetable by day">
+            <button class="tt-day active" type="button" data-day="all" aria-pressed="true">All days</button>
+            <button class="tt-day" type="button" data-day="Monday" aria-pressed="false">Mon</button>
+            <button class="tt-day" type="button" data-day="Tuesday" aria-pressed="false">Tue</button>
+            <button class="tt-day" type="button" data-day="Wednesday" aria-pressed="false">Wed</button>
+            <button class="tt-day" type="button" data-day="Thursday" aria-pressed="false">Thu</button>
+            <button class="tt-day" type="button" data-day="Friday" aria-pressed="false">Fri</button>
+            <button class="tt-day" type="button" data-day="Saturday" aria-pressed="false">Sat</button>
+            <button class="tt-day" type="button" data-day="Sunday" aria-pressed="false">Sun</button>
+        </div>
+
+        <div class="tt-list-shell">
+            <div id="timetableList" aria-live="polite">
+                <div class="tt-empty">
+                    <strong>Loading your classes…</strong>
+                    One second while CampusNav gets the schedule.
+                </div>
+            </div>
+            <div id="emptyDay" class="tt-empty" hidden>
+                <strong>No classes displayed for this day.</strong>
+                Your timetable data may not include this day yet.
+            </div>
+        </div>
+    </section>
+
+    <aside class="tt-note">
+        <span>💡</span>
+        <div>
+            <strong>Room changed?</strong><br>
+            Timetable updates made through the Class Representative dashboard
+            are reflected here on this browser. Shared live updates between
+            different students will require the backend.
+        </div>
+    </aside>
+
+</main>
+
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html">
+        <span>⌂</span>
+        <small>Home</small>
+    </a>
+    <a href="map.html">
+        <span>⌖</span>
+        <small>Map</small>
+    </a>
+    <a href="timetable.html" class="active" aria-current="page">
+        <span>▣</span>
+        <small>Schedule</small>
+    </a>
+    <a href="events.html">
+        <span>☆</span>
+        <small>Events</small>
+    </a>
+</nav>
+
+<script src="campusData.js"></script>
+<script src="timetableData.js"></script>
+<script src="timetable.js"></script>
+
+<script>
+    // Theme persistence
+    const themeToggle = document.getElementById("themeToggle");
+
+    function updateThemeButton() {
+        const theme = document.documentElement.dataset.theme || "dark";
+        themeToggle.textContent = theme === "light" ? "☀" : "☾";
+        themeToggle.setAttribute(
+            "aria-label",
+            theme === "light" ? "Switch to dark theme" : "Switch to light theme"
+        );
+    }
+
+    themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.dataset.theme || "dark";
+        const next = current === "light" ? "dark" : "light";
+
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem("campusnav-theme", next);
+        updateThemeButton();
+    });
+
+    updateThemeButton();
+
+    // Date display
+    const today = new Date();
+    document.getElementById("todayLabel").textContent =
+        today.toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "short"
+        });
+
+    // Day filtering for the classes rendered by timetable.js
+    const list = document.getElementById("timetableList");
+    const emptyDay = document.getElementById("emptyDay");
+    const filterStatus = document.getElementById("filterStatus");
+    const dayButtons = [...document.querySelectorAll(".tt-day")];
+
+    let selectedDay = "all";
+
+    function applyDayFilter() {
+        const items = [...list.children].filter(
+            item => item.id !== "emptyDay" && !item.classList.contains("tt-empty")
+        );
+
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const matches = selectedDay === "all" ||
+                text.includes(selectedDay.toLowerCase());
+
+            item.hidden = !matches;
+            if (matches) visibleCount++;
+        });
+
+        filterStatus.textContent = selectedDay === "all"
+            ? `${visibleCount} displayed`
+            : `${visibleCount} displayed`;
+
+        emptyDay.hidden = selectedDay === "all" || visibleCount > 0;
+
+        dayButtons.forEach(button => {
+            const active = button.dataset.day === selectedDay;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-pressed", String(active));
+        });
+    }
+
+    dayButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            selectedDay = button.dataset.day;
+            applyDayFilter();
+        });
+    });
+
+    // timetable.js renders on DOMContentLoaded. Watch for its updates
+    // so the selected filter stays applied after timetable refreshes.
+    const timetableObserver = new MutationObserver(() => {
+        applyDayFilter();
+        updateNextClassLink();
+    });
+
+    timetableObserver.observe(list, { childList: true, subtree: true });
+
+    // Send the next-class action to the room stored in the timetable.
+    function updateNextClassLink() {
+        const link = document.getElementById("nextClassNavigate");
+        const content = document.getElementById("nextClass");
+
+        if (!content) return;
+
+        const routeLink = content.querySelector('a[href*="map.html"]');
+
+        if (routeLink) {
+            link.href = routeLink.getAttribute("href");
+        }
+    }
+
+    // Fallback refresh in case the existing timetable script updates
+    // the next class without replacing the list contents.
+    updateNextClassLink();
+</script>
+
+</body>
+</html>

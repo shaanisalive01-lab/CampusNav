@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusNav</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+            transition: background 0.25s ease, color 0.25s ease;
+        }
+
+        body.dark {
+            background: #0f141c;
+            color: #f2f5f9;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid #e6eaf0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        body.dark .navbar {
+            background: rgba(15, 20, 28, 0.95);
+            border-color: #252d3a;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1769ff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            font-size: 14px;
+            color: #667085;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #1769ff;
+        }
+
+        body.dark .nav-links a {
+            color: #aab4c3;
+        }
+
+        body.dark .nav-links a:hover,
+        body.dark .nav-links a.active {
+            color: #5d9cff;
+        }
+
+        .theme-toggle {
+            border: 1px solid #dfe4eb;
+            background: transparent;
+            border-radius: 8px;
+            padding: 8px 11px;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        body.dark .theme-toggle {
+            border-color: #303947;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            max-width: 1150px;
+            margin: auto;
+            padding: 75px 6% 45px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            font-size: 13px;
+            color: #1769ff;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 64px);
+            line-height: 1.05;
+            letter-spacing: -2px;
+            max-width: 750px;
+            margin-bottom: 18px;
+        }
+
+        .hero p {
+            max-width: 620px;
+            font-size: 17px;
+            line-height: 1.6;
+            color: #667085;
+            margin-bottom: 30px;
+        }
+
+        body.dark .hero p {
+            color: #aab4c3;
+        }
+
+        .search-box {
+            max-width: 650px;
+            display: flex;
+            background: white;
+            border: 1px solid #dfe4eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        body.dark .search-box {
+            background: #171d27;
+            border-color: #303947;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 16px;
+            background: transparent;
+            color: inherit;
+            font-size: 15px;
+        }
+
+        .search-box button {
+            border: none;
+            background: #1769ff;
+            color: white;
+            padding: 0 22px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+            padding: 0 6% 70px;
+        }
+
+        .section {
+            margin-top: 45px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .section-header h2 {
+            font-size: 23px;
+        }
+
+        .section-header a {
+            font-size: 14px;
+            color: #1769ff;
+        }
+
+        /* =========================
+           QUICK ACCESS
+        ========================= */
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .quick-item {
+            background: white;
+            border: 1px solid #e5e9ef;
+            padding: 22px;
+            border-radius: 12px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .quick-item:hover {
+            transform: translateY(-3px);
+            border-color: #1769ff;
+        }
+
+        body.dark .quick-item {
+            background: #171d27;
+            border-color: #252d3a;
+        }
+
+        .quick-item span {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .quick-item h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .quick-item p {
+            font-size: 13px;
+            color: #667085;
+        }
+
+        body.dark .quick-item p {
+            color: #aab4c3;
+        }
+
+        /* =========================
+           NEXT CLASS
+        ========================= */
+
+        .next-class {
+            background: #1769ff;
+            color: white;
+            border-radius: 14px;
+            padding: 28px;
+            min-height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .next-class-content {
+            flex: 1;
+        }
+
+        .next-class-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .next-class h3 {
+            font-size: 27px;
+            margin: 9px 0;
+        }
+
+        .next-class p {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .navigate-btn {
+            display: inline-block;
+            margin-top: 16px;
+            background: white;
+            color: #1769ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* =========================
+           CARDS
+        ========================= */
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e9ef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: #1769ff;
+        }
+
+        body.dark .card {
+            background: #171d27;
+            border-color: #252d3a;
+        }
+
+        .card-tag {
+            font-size: 11px;
+            color: #1769ff;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card h3 {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #667085;
+        }
+
+        body.dark .card p {
+            color: #aab4c3;
+        }
+
+        /* =========================
+           MOBILE NAV
+        ========================= */
+
+        .mobile-nav {
+            display: none;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 850px) {
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .nav-links a:nth-child(4),
+            .nav-links a:nth-child(5),
+            .nav-links a:nth-child(6) {
+                display: none;
+            }
+
+            .quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                height: 62px;
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 55px 20px 35px;
+            }
+
+            .hero h1 {
+                font-size: 42px;
+            }
+
+            .container {
+                padding: 0 20px 90px;
+            }
+
+            .quick-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .next-class {
+                padding: 22px;
+            }
+
+            .next-class h3 {
+                font-size: 23px;
+            }
+
+            .mobile-nav {
+                position: fixed;
+                display: flex;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 65px;
+                background: rgba(255, 255, 255, 0.97);
+                border-top: 1px solid #e5e9ef;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 200;
+            }
+
+            body.dark .mobile-nav {
+                background: rgba(15, 20, 28, 0.97);
+                border-color: #252d3a;
+            }
+
+            .mobile-nav a {
+                font-size: 11px;
+                color: #667085;
+                text-align: center;
+            }
+
+            .mobile-nav a.active {
+                color: #1769ff;
+                font-weight: 600;
+            }
+
+            body.dark .mobile-nav a {
+                color: #aab4c3;
+            }
+
+            body.dark .mobile-nav a.active {
+                color: #5d9cff;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a href="index.html" class="logo">
+            CampusNav
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="index.html" class="active">
+                Home
+            </a>
+
+            <a href="map.html">
+                Map
+            </a>
+
+            <a href="timetable.html">
+                Timetable
+            </a>
+
+            <a href="explore.html">
+                Explore
+            </a>
+
+            <a href="events.html">
+                Events
+            </a>
+
+            <a href="groups.html">
+                Groups
+            </a>
+
+        </nav>
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            onclick="toggleTheme()"
+        >
+            ☾
+        </button>
+
+    </header>
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+
+    <section class="hero">
+
+        <span class="hero-label">
+            YOUR CAMPUS, CONNECTED
+        </span>
+
+        <h1>
+            Everything you need to know about your campus.
+        </h1>
+
+        <p>
+            Find classrooms, follow your schedule, discover events,
+            explore campus facilities and connect with student groups.
+        </p>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="homeSearch"
+                placeholder="Search rooms, buildings or places..."
+            >
+
+            <button onclick="searchCampus()">
+                Search
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <main class="container">
+
+        <!-- =========================
+             QUICK ACCESS
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+                <h2>Quick Access</h2>
+            </div>
+
+            <div class="quick-grid">
+
+                <a href="map.html" class="quick-item">
+                    <span>🧭</span>
+                    <h3>Navigate</h3>
+                    <p>Find a room or campus location.</p>
+                </a>
+
+                <a href="timetable.html" class="quick-item">
+                    <span>📅</span>
+                    <h3>Schedule</h3>
+                    <p>View your classes and timetable.</p>
+                </a>
+
+                <a href="explore.html" class="quick-item">
+                    <span>🔎</span>
+                    <h3>Explore</h3>
+                    <p>Discover places around campus.</p>
+                </a>
+
+                <a href="groups.html" class="quick-item">
+                    <span>👥</span>
+                    <h3>Groups</h3>
+                    <p>Find clubs and student communities.</p>
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NEXT CLASS
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+                <h2>Your Schedule</h2>
+
+                <a href="timetable.html">
+                    Full timetable →
+                </a>
+            </div>
+
+            <div
+                class="next-class"
+                id="nextClass"
+            >
+
+                <div class="next-class-content">
+
+                    <span class="next-class-label">
+                        LOADING
+                    </span>
+
+                    <h3>
+                        Checking your timetable...
+                    </h3>
+
+                    <p>
+                        CampusNav is figuring out where you're supposed to be.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             UPCOMING EVENTS
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>Upcoming Events</h2>
+
+                <a href="events.html">
+                    View all →
+                </a>
+
+            </div>
+
+            <div class="card-grid">
+
+                <a href="events.html" class="card">
+
+                    <div class="card-tag">
+                        Technical
+                    </div>
+
+                    <h3>
+                        Robotics Club Meeting
+                    </h3>
+
+                    <p>
+                        Today · 3:30 PM · Block A
+                    </p>
+
+                </a>
+
+
+                <a href="events.html" class="card">
+
+                    <div class="card-tag">
+                        Technical
+                    </div>
+
+                    <h3>
+                        CAD Design Workshop
+                    </h3>
+
+                    <p>
+                        Tomorrow · 11:00 AM · Room 204
+                    </p>
+
+                </a>
+
+
+                <a href="events.html" class="card">
+
+                    <div class="card-tag">
+                        Social
+                    </div>
+
+                    <h3>
+                        Freshers Meetup
+                    </h3>
+
+                    <p>
+                        Friday · 6:00 PM · Main Gate
+                    </p>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             EXPLORE CAMPUS
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>Explore Campus</h2>
+
+                <a href="explore.html">
+                    Explore →
+                </a>
+
+            </div>
+
+            <div class="card-grid">
+
+                <a href="explore.html" class="card">
+
+                    <div class="card-tag">
+                        Study
+                    </div>
+
+                    <h3>
+                        Library
+                    </h3>
+
+                    <p>
+                        Find a quiet place to study.
+                    </p>
+
+                </a>
+
+
+                <a href="explore.html" class="card">
+
+                    <div class="card-tag">
+                        Food
+                    </div>
+
+                    <h3>
+                        Cafeteria
+                    </h3>
+
+                    <p>
+                        Find food and hangout spots.
+                    </p>
+
+                </a>
+
+
+                <a href="explore.html" class="card">
+
+                    <div class="card-tag">
+                        Facilities
+                    </div>
+
+                    <h3>
+                        Physics Lab
+                    </h3>
+
+                    <p>
+                        Locate important campus facilities.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             GROUPS
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>Student Groups</h2>
+
+                <a href="groups.html">
+                    View groups →
+                </a>
+
+            </div>
+
+            <div class="card-grid">
+
+                <a href="groups.html" class="card">
+
+                    <div class="card-tag">
+                        Technical
+                    </div>
+
+                    <h3>
+                        Robotics Club
+                    </h3>
+
+                    <p>
+                        Build, experiment and compete.
+                    </p>
+
+                </a>
+
+
+                <a href="groups.html" class="card">
+
+                    <div class="card-tag">
+                        Academic
+                    </div>
+
+                    <h3>
+                        Engineering Maths Study Group
+                    </h3>
+
+                    <p>
+                        Study together and prepare for exams.
+                    </p>
+
+                </a>
+
+
+                <a href="groups.html" class="card">
+
+                    <div class="card-tag">
+                        Social
+                    </div>
+
+                    <h3>
+                        F1 & Motorsport
+                    </h3>
+
+                    <p>
+                        Talk cars, racing and motorsport.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             CAMPUS UPDATES
+        ========================= -->
+
+        <section class="section">
+
+            <div class="section-header">
+
+                <h2>Campus Updates</h2>
+
+            </div>
+
+            <div class="card-grid">
+
+                <a href="timetable.html" class="card">
+
+                    <div class="card-tag">
+                        Academic
+                    </div>
+
+                    <h3>
+                        Timetable
+                    </h3>
+
+                    <p>
+                        Check your upcoming classes.
+                    </p>
+
+                </a>
+
+
+                <a href="events.html" class="card">
+
+                    <div class="card-tag">
+                        Events
+                    </div>
+
+                    <h3>
+                        Campus Events
+                    </h3>
+
+                    <p>
+                        See what's happening around campus.
+                    </p>
+
+                </a>
+
+
+                <a href="explore.html" class="card">
+
+                    <div class="card-tag">
+                        Explore
+                    </div>
+
+                    <h3>
+                        Discover Campus
+                    </h3>
+
+                    <p>
+                        Find facilities, food and study spots.
+                    </p>
+
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         MOBILE NAV
+    ========================= -->
+
+    <nav class="mobile-nav">
+
+        <a href="index.html" class="active">
+            🏠<br>
+            Home
+        </a>
+
+        <a href="map.html">
+            🧭<br>
+            Map
+        </a>
+
+        <a href="timetable.html">
+            📅<br>
+            Schedule
+        </a>
+
+        <a href="events.html">
+            🎉<br>
+            Events
+        </a>
+
+    </nav>
+
+
+    <!-- =========================
+         TIMETABLE DATA
+    ========================= -->
+
+    <script src="campusData.js"></script>
+    <script src="timetableData.js"></script>
+    <script src="timetable.js"></script>
+
+
+    <!-- =========================
+         HOME FUNCTIONS
+    ========================= -->
+
+    <script>
+
+        // ==========================================
+        // THEME
+        // ==========================================
+
+        function applyTheme() {
+
+            const savedTheme =
+                localStorage.getItem("campusnav-theme");
+
+            if (savedTheme === "dark") {
+                document.body.classList.add("dark");
+
+                const button =
+                    document.getElementById("themeToggle");
+
+                if (button) {
+                    button.textContent = "☀";
+                }
+            }
+        }
+
+
+        function toggleTheme() {
+
+            document.body.classList.toggle("dark");
+
+            const isDark =
+                document.body.classList.contains("dark");
+
+            localStorage.setItem(
+                "campusnav-theme",
+                isDark ? "dark" : "light"
+            );
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent = isDark ? "☀" : "☾";
+        }
+
+
+        // ==========================================
+        // SEARCH
+        // ==========================================
+
+        function searchCampus() {
+
+            const input =
+                document.getElementById("homeSearch");
+
+            const searchText =
+                input.value.trim();
+
+            if (!searchText) {
+                return;
+            }
+
+            window.location.href =
+                "map.html?destination=" +
+                encodeURIComponent(searchText);
+        }
+
+
+        document
+            .getElementById("homeSearch")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+                    searchCampus();
+                }
+
+            });
+
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+
+        applyTheme();
+
+    </script>
+
+</body>
+
+</html>

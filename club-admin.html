@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Club Admin | CampusNav</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+            transition: 0.25s ease;
+        }
+
+
+        body.dark {
+            background: #0f141c;
+            color: #f2f5f9;
+        }
+
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+
+        /* NAVBAR */
+
+        .navbar {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            background: rgba(255,255,255,.96);
+            border-bottom: 1px solid #e6eaf0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+
+        body.dark .navbar {
+            background: rgba(15,20,28,.96);
+            border-color: #252d3a;
+        }
+
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1769ff;
+        }
+
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+
+
+        .nav-links a {
+            font-size: 14px;
+            color: #667085;
+        }
+
+
+        .nav-links a:hover {
+            color: #1769ff;
+        }
+
+
+        body.dark .nav-links a {
+            color: #aab4c3;
+        }
+
+
+        .theme-toggle {
+            border: 1px solid #dfe4eb;
+            background: transparent;
+            border-radius: 8px;
+            padding: 8px 11px;
+            cursor: pointer;
+            color: inherit;
+        }
+
+
+        body.dark .theme-toggle {
+            border-color: #303947;
+        }
+
+
+        /* PAGE */
+
+        .page {
+            max-width: 1000px;
+            margin: auto;
+            padding: 55px 6% 90px;
+        }
+
+
+        .page-label {
+            color: #1769ff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+
+        .page h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+
+        .page-intro {
+            color: #667085;
+            line-height: 1.6;
+            margin-bottom: 35px;
+        }
+
+
+        body.dark .page-intro {
+            color: #aab4c3;
+        }
+
+
+        /* CLUB HEADER */
+
+        .club-header {
+            background: white;
+            border: 1px solid #e1e6ed;
+            border-radius: 14px;
+            padding: 26px;
+            margin-bottom: 25px;
+        }
+
+
+        body.dark .club-header {
+            background: #171d27;
+            border-color: #2a3340;
+        }
+
+
+        .club-tag {
+            color: #1769ff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+
+        .club-header h2 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+
+        .club-header p {
+            color: #667085;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+
+        body.dark .club-header p {
+            color: #aab4c3;
+        }
+
+
+        /* SECTIONS */
+
+        .section {
+            margin-top: 28px;
+        }
+
+
+        .section-title {
+            margin-bottom: 15px;
+        }
+
+
+        .section-title h2 {
+            font-size: 22px;
+        }
+
+
+        /* NOTIFICATION */
+
+        .notification {
+            display: none;
+            background: #eef5ff;
+            border: 1px solid #cfe0ff;
+            color: #172033;
+            border-radius: 12px;
+            padding: 17px;
+            margin-bottom: 22px;
+        }
+
+
+        .notification.active {
+            display: block;
+        }
+
+
+        .notification-title {
+            color: #1769ff;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+
+        .notification p {
+            color: #344054;
+            font-size: 14px;
+        }
+
+
+        body.dark .notification {
+            background: #16243a;
+            border-color: #294d7c;
+            color: #f2f5f9;
+        }
+
+
+        body.dark .notification-title {
+            color: #6ea1ff;
+        }
+
+
+        body.dark .notification p {
+            color: #d7e0ec;
+        }
+
+
+        /* FORM */
+
+        .form-card {
+            background: white;
+            border: 1px solid #e1e6ed;
+            border-radius: 14px;
+            padding: 26px;
+        }
+
+
+        body.dark .form-card {
+            background: #171d27;
+            border-color: #2a3340;
+        }
+
+
+        .field {
+            margin-bottom: 18px;
+        }
+
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dce2e9;
+            border-radius: 8px;
+            background: white;
+            color: #172033;
+            outline: none;
+        }
+
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: #1769ff;
+        }
+
+
+        body.dark .field input,
+        body.dark .field textarea,
+        body.dark .field select {
+            background: #1b222d;
+            border-color: #303947;
+            color: #f2f5f9;
+        }
+
+
+        .field textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+
+        .create-btn {
+            width: 100%;
+            border: none;
+            background: #1769ff;
+            color: white;
+            padding: 13px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+
+        .create-btn:hover {
+            background: #0f5be0;
+        }
+
+
+        /* EVENTS */
+
+        .event-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+
+        .event-card {
+            background: white;
+            border: 1px solid #e1e6ed;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+
+        body.dark .event-card {
+            background: #171d27;
+            border-color: #2a3340;
+        }
+
+
+        .event-tag {
+            color: #1769ff;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 9px;
+        }
+
+
+        .event-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+
+        .event-card p {
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+
+        body.dark .event-card p {
+            color: #aab4c3;
+        }
+
+
+        .event-description {
+            margin-top: 10px;
+        }
+
+
+        .event-actions {
+            display: flex;
+            gap: 9px;
+            margin-top: 16px;
+        }
+
+
+        .small-btn {
+            display: inline-block;
+            padding: 9px 12px;
+            border-radius: 7px;
+            border: 1px solid #dce2e9;
+            background: transparent;
+            cursor: pointer;
+            color: inherit;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        .small-btn:hover {
+            border-color: #1769ff;
+            color: #1769ff;
+        }
+
+
+        .delete-btn:hover {
+            border-color: #d64545;
+            color: #d64545;
+        }
+
+
+        /* EMPTY STATE */
+
+        .empty-state {
+            background: white;
+            border: 1px solid #e1e6ed;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            color: #667085;
+        }
+
+
+        body.dark .empty-state {
+            background: #171d27;
+            border-color: #2a3340;
+            color: #aab4c3;
+        }
+
+
+        /* MOBILE NAV */
+
+        .mobile-nav {
+            display: none;
+        }
+
+
+        @media(max-width:700px) {
+
+            .navbar {
+                height: 62px;
+                padding: 0 20px;
+            }
+
+
+            .nav-links {
+                display: none;
+            }
+
+
+            .page {
+                padding: 40px 20px 90px;
+            }
+
+
+            .page h1 {
+                font-size: 34px;
+            }
+
+
+            .event-list {
+                grid-template-columns: 1fr;
+            }
+
+
+            .mobile-nav {
+                position: fixed;
+                display: flex;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 65px;
+                background: rgba(255,255,255,.97);
+                border-top: 1px solid #e5e9ef;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 200;
+            }
+
+
+            body.dark .mobile-nav {
+                background: rgba(15,20,28,.97);
+                border-color: #252d3a;
+            }
+
+
+            .mobile-nav a {
+                font-size: 11px;
+                text-align: center;
+                color: #667085;
+            }
+
+
+            body.dark .mobile-nav a {
+                color: #aab4c3;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- NAVBAR -->
+
+    <header class="navbar">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            CampusNav
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="map.html">
+                Map
+            </a>
+
+            <a href="timetable.html">
+                Timetable
+            </a>
+
+            <a href="explore.html">
+                Explore
+            </a>
+
+            <a href="events.html">
+                Events
+            </a>
+
+            <a href="groups.html">
+                Groups
+            </a>
+
+        </nav>
+
+
+        <button
+            type="button"
+            class="theme-toggle"
+            id="themeToggle"
+        >
+            ☾
+        </button>
+
+    </header>
+
+
+
+    <!-- MAIN -->
+
+    <main class="page">
+
+        <div class="page-label">
+            CLUB LEADER
+        </div>
+
+
+        <h1>
+            Club Admin
+        </h1>
+
+
+        <p class="page-intro">
+            Manage your club and publish events for students
+            across campus.
+        </p>
+
+
+
+        <!-- NOTIFICATION -->
+
+        <div
+            class="notification"
+            id="notification"
+        >
+
+            <div class="notification-title">
+                🔔 CAMPUS UPDATE
+            </div>
+
+
+            <p id="notificationText"></p>
+
+        </div>
+
+
+
+        <!-- CLUB -->
+
+        <section class="club-header">
+
+            <div class="club-tag">
+                YOUR CLUB
+            </div>
+
+
+            <h2>
+                Robotics Club
+            </h2>
+
+
+            <p>
+                Build, experiment, compete and work on
+                robotics projects with students across campus.
+            </p>
+
+        </section>
+
+
+
+        <!-- CREATE EVENT -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>
+                    Create Event
+                </h2>
+
+            </div>
+
+
+            <div class="form-card">
+
+                <div class="field">
+
+                    <label for="eventName">
+                        Event Name
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="eventName"
+                        placeholder="e.g. Robotics Workshop"
+                    >
+
+                </div>
+
+
+
+                <div class="field">
+
+                    <label for="eventDate">
+                        Date
+                    </label>
+
+
+                    <input
+                        type="date"
+                        id="eventDate"
+                    >
+
+                </div>
+
+
+
+                <div class="field">
+
+                    <label for="eventTime">
+                        Time
+                    </label>
+
+
+                    <input
+                        type="time"
+                        id="eventTime"
+                    >
+
+                </div>
+
+
+
+                <div class="field">
+
+                    <label for="eventLocation">
+                        Location
+                    </label>
+
+
+                    <select id="eventLocation">
+
+                        <option value="block-a">
+                            Block A
+                        </option>
+
+                        <option value="a201">
+                            Block A · Room 201
+                        </option>
+
+                        <option value="a204">
+                            Block A · Room 204
+                        </option>
+
+                        <option value="a105">
+                            Block A · Room 105
+                        </option>
+
+                        <option value="library">
+                            Library
+                        </option>
+
+                        <option value="cafeteria">
+                            Cafeteria
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="field">
+
+                    <label for="eventDescription">
+                        Description
+                    </label>
+
+
+                    <textarea
+                        id="eventDescription"
+                        placeholder="Tell students what the event is about..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <button
+                    type="button"
+                    class="create-btn"
+                    id="publishEventBtn"
+                >
+                    Publish Event
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- EVENTS -->
+
+        <section class="section">
+
+            <div class="section-title">
+
+                <h2>
+                    Your Events
+                </h2>
+
+            </div>
+
+
+            <div
+                class="event-list"
+                id="eventList"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- MOBILE NAV -->
+
+    <nav class="mobile-nav">
+
+        <a href="index.html">
+            🏠<br>
+            Home
+        </a>
+
+
+        <a href="map.html">
+            🧭<br>
+            Map
+        </a>
+
+
+        <a href="timetable.html">
+            📅<br>
+            Schedule
+        </a>
+
+
+        <a href="events.html">
+            🎉<br>
+            Events
+        </a>
+
+    </nav>
+
+
+
+    <script>
+
+        const EVENT_STORAGE_KEY =
+            "campusnav-club-events";
+
+
+        /* =========================
+           STORAGE
+        ========================= */
+
+        function loadEvents() {
+
+            const saved =
+                localStorage.getItem(
+                    EVENT_STORAGE_KEY
+                );
+
+
+            if (!saved) {
+                return [];
+            }
+
+
+            try {
+                return JSON.parse(saved);
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Could not load events:",
+                    error
+                );
+
+                return [];
+
+            }
+
+        }
+
+
+        function saveEvents(events) {
+
+            localStorage.setItem(
+                EVENT_STORAGE_KEY,
+                JSON.stringify(events)
+            );
+
+        }
+
+
+
+        /* =========================
+           CREATE EVENT
+        ========================= */
+
+        function createEvent() {
+
+            const name =
+                document
+                    .getElementById("eventName")
+                    .value
+                    .trim();
+
+
+            const date =
+                document
+                    .getElementById("eventDate")
+                    .value;
+
+
+            const time =
+                document
+                    .getElementById("eventTime")
+                    .value;
+
+
+            const locationId =
+                document
+                    .getElementById("eventLocation")
+                    .value;
+
+
+            const description =
+                document
+                    .getElementById("eventDescription")
+                    .value
+                    .trim();
+
+
+            /* VALIDATION */
+
+            if (name === "") {
+
+                alert(
+                    "Please enter an event name."
+                );
+
+                return;
+
+            }
+
+
+            if (date === "") {
+
+                alert(
+                    "Please select a date."
+                );
+
+                return;
+
+            }
+
+
+            if (time === "") {
+
+                alert(
+                    "Please select a time."
+                );
+
+                return;
+
+            }
+
+
+            /* CREATE OBJECT */
+
+            const newEvent = {
+
+                id: Date.now(),
+
+                name: name,
+
+                date: date,
+
+                time: time,
+
+                location: locationId,
+
+                description: description,
+
+                club: "Robotics Club"
+
+            };
+
+
+            /* LOAD EXISTING */
+
+            const events =
+                loadEvents();
+
+
+            /* ADD NEW EVENT */
+
+            events.push(newEvent);
+
+
+            /* SAVE */
+
+            saveEvents(events);
+
+
+            /* RESET FORM */
+
+            document
+                .getElementById("eventName")
+                .value = "";
+
+
+            document
+                .getElementById("eventDate")
+                .value = "";
+
+
+            document
+                .getElementById("eventTime")
+                .value = "";
+
+
+            document
+                .getElementById("eventDescription")
+                .value = "";
+
+
+            /* REFRESH EVENTS */
+
+            displayEvents();
+
+
+            /* NOTIFICATION */
+
+            showNotification(
+                name +
+                " has been published for students."
+            );
+
+        }
+
+
+
+        /* =========================
+           DISPLAY EVENTS
+        ========================= */
+
+        function displayEvents() {
+
+            const container =
+                document.getElementById(
+                    "eventList"
+                );
+
+
+            const events =
+                loadEvents();
+
+
+            container.innerHTML = "";
+
+
+            if (events.length === 0) {
+
+                container.innerHTML = `
+
+                    <div class="empty-state">
+
+                        No events created yet.
+
+                        <br><br>
+
+                        Create your first club event above.
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            events.forEach(
+                function(event) {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.className =
+                        "event-card";
+
+
+                    const locationName =
+                        getLocationName(
+                            event.location
+                        );
+
+
+                    card.innerHTML = `
+
+                        <div class="event-tag">
+                            ROBOTICS CLUB
+                        </div>
+
+
+                        <h3>
+                            ${escapeHTML(
+                                event.name
+                            )}
+                        </h3>
+
+
+                        <p>
+                            📅
+                            ${formatDate(
+                                event.date
+                            )}
+                        </p>
+
+
+                        <p>
+                            🕒
+                            ${formatTime(
+                                event.time
+                            )}
+                        </p>
+
+
+                        <p>
+                            📍
+                            ${locationName}
+                        </p>
+
+
+                        ${
+                            event.description
+                                ? `
+                                    <p class="event-description">
+                                        ${escapeHTML(
+                                            event.description
+                                        )}
+                                    </p>
+                                  `
+                                : ""
+                        }
+
+
+                        <div class="event-actions">
+
+                            <a
+                                class="small-btn"
+                                href="map.html?destination=${encodeURIComponent(
+                                    event.location
+                                )}"
+                            >
+                                Navigate
+                            </a>
+
+
+                            <button
+                                type="button"
+                                class="small-btn delete-btn"
+                                data-event-id="${event.id}"
+                            >
+                                Delete
+                            </button>
+
+                        </div>
+
+                    `;
+
+
+                    const deleteButton =
+                        card.querySelector(
+                            ".delete-btn"
+                        );
+
+
+                    deleteButton.addEventListener(
+                        "click",
+                        function() {
+
+                            deleteEvent(
+                                event.id
+                            );
+
+                        }
+                    );
+
+
+                    container.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================
+           DELETE EVENT
+        ========================= */
+
+        function deleteEvent(
+            eventId
+        ) {
+
+            const confirmed =
+                window.confirm(
+                    "Delete this event?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            const events =
+                loadEvents();
+
+
+            const updatedEvents =
+                events.filter(
+                    function(event) {
+
+                        return event.id !==
+                            eventId;
+
+                    }
+                );
+
+
+            saveEvents(
+                updatedEvents
+            );
+
+
+            displayEvents();
+
+
+            showNotification(
+                "Event deleted successfully."
+            );
+
+        }
+
+
+
+        /* =========================
+           LOCATION
+        ========================= */
+
+        function getLocationName(
+            locationId
+        ) {
+
+            const locations = {
+
+                "block-a":
+                    "Block A",
+
+                "a201":
+                    "Block A · Room 201",
+
+                "a204":
+                    "Block A · Room 204",
+
+                "a105":
+                    "Block A · Room 105",
+
+                "library":
+                    "Library",
+
+                "cafeteria":
+                    "Cafeteria"
+
+            };
+
+
+            return (
+                locations[locationId] ||
+                "Campus"
+            );
+
+        }
+
+
+
+        /* =========================
+           DATE
+        ========================= */
+
+        function formatDate(
+            dateString
+        ) {
+
+            const date =
+                new Date(
+                    dateString +
+                    "T00:00:00"
+                );
+
+
+            return date.toLocaleDateString(
+                undefined,
+                {
+                    weekday: "short",
+                    day: "numeric",
+                    month: "short"
+                }
+            );
+
+        }
+
+
+
+        /* =========================
+           TIME
+        ========================= */
+
+        function formatTime(
+            timeString
+        ) {
+
+            const parts =
+                timeString.split(":");
+
+
+            let hours =
+                Number(parts[0]);
+
+
+            const minutes =
+                parts[1];
+
+
+            const suffix =
+                hours >= 12
+                    ? "PM"
+                    : "AM";
+
+
+            hours =
+                hours % 12 || 12;
+
+
+            return (
+                hours +
+                ":" +
+                minutes +
+                " " +
+                suffix
+            );
+
+        }
+
+
+
+        /* =========================
+           NOTIFICATION
+        ========================= */
+
+        function showNotification(
+            message
+        ) {
+
+            const box =
+                document.getElementById(
+                    "notification"
+                );
+
+
+            const text =
+                document.getElementById(
+                    "notificationText"
+                );
+
+
+            text.textContent =
+                message;
+
+
+            box.classList.add(
+                "active"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    box.classList.remove(
+                        "active"
+                    );
+
+                },
+                4000
+            );
+
+        }
+
+
+
+        /* =========================
+           HTML SAFETY
+        ========================= */
+
+        function escapeHTML(
+            text
+        ) {
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            element.textContent =
+                text;
+
+
+            return element.innerHTML;
+
+        }
+
+
+
+        /* =========================
+           THEME
+        ========================= */
+
+        function applyTheme() {
+
+            const savedTheme =
+                localStorage.getItem(
+                    "campusnav-theme"
+                );
+
+
+            const toggle =
+                document.getElementById(
+                    "themeToggle"
+                );
+
+
+            if (
+                savedTheme === "dark"
+            ) {
+
+                document.body.classList.add(
+                    "dark"
+                );
+
+
+                toggle.textContent =
+                    "☀";
+
+            }
+
+            else {
+
+                toggle.textContent =
+                    "☾";
+
+            }
+
+        }
+
+
+
+        function toggleTheme() {
+
+            document.body.classList.toggle(
+                "dark"
+            );
+
+
+            const isDark =
+                document.body.classList.contains(
+                    "dark"
+                );
+
+
+            localStorage.setItem(
+                "campusnav-theme",
+                isDark
+                    ? "dark"
+                    : "light"
+            );
+
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent =
+                isDark
+                    ? "☀"
+                    : "☾";
+
+        }
+
+
+
+        /* =========================
+           INITIALIZE
+        ========================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                applyTheme();
+
+                displayEvents();
+
+
+                document
+                    .getElementById(
+                        "themeToggle"
+                    )
+                    .addEventListener(
+                        "click",
+                        toggleTheme
+                    );
+
+
+                document
+                    .getElementById(
+                        "publishEventBtn"
+                    )
+                    .addEventListener(
+                        "click",
+                        createEvent
+                    );
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

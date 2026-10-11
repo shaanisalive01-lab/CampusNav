@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CR Dashboard | CampusNav</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+            transition:
+                background 0.25s ease,
+                color 0.25s ease;
+        }
+
+
+        body.dark {
+            background: #0f141c;
+            color: #f2f5f9;
+        }
+
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+
+        button,
+        select {
+            font: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            height: 70px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            background: rgba(255, 255, 255, 0.95);
+
+            border-bottom:
+                1px solid #e6eaf0;
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+        }
+
+
+        body.dark .navbar {
+            background:
+                rgba(15, 20, 28, 0.95);
+
+            border-color:
+                #252d3a;
+        }
+
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1769ff;
+        }
+
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+
+        .nav-links a {
+            font-size: 14px;
+            color: #667085;
+
+            transition:
+                color 0.2s ease;
+        }
+
+
+        .nav-links a:hover {
+            color: #1769ff;
+        }
+
+
+        body.dark .nav-links a {
+            color: #aab4c3;
+        }
+
+
+        body.dark .nav-links a:hover {
+            color: #6ea1ff;
+        }
+
+
+        .theme-toggle {
+            border:
+                1px solid #dfe4eb;
+
+            background: transparent;
+
+            border-radius: 8px;
+
+            padding: 8px 11px;
+
+            cursor: pointer;
+
+            color: inherit;
+        }
+
+
+        body.dark .theme-toggle {
+            border-color:
+                #303947;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            max-width: 900px;
+
+            margin: auto;
+
+            padding:
+                55px 6% 80px;
+        }
+
+
+        .page-label {
+            color: #1769ff;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .page h1 {
+            font-size: 40px;
+
+            letter-spacing: -1px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .page-intro {
+            color: #667085;
+
+            line-height: 1.6;
+
+            margin-bottom: 35px;
+        }
+
+
+        body.dark .page-intro {
+            color: #aab4c3;
+        }
+
+
+        /* =========================
+           STUDENT NOTIFICATION
+        ========================= */
+
+        .notification {
+            display: none;
+
+            background: #eef5ff;
+
+            border:
+                1px solid #cfe0ff;
+
+            border-radius: 12px;
+
+            padding: 18px;
+
+            margin-bottom: 22px;
+
+            color: #172033;
+        }
+
+
+        .notification.active {
+            display: block;
+        }
+
+
+        .notification-title {
+            color: #1769ff;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+        }
+
+
+        .notification p {
+            color: #344054;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+        }
+
+
+        /* DARK MODE NOTIFICATION */
+
+        body.dark .notification {
+            background: #16243a;
+
+            border-color: #294d7c;
+
+            color: #f2f5f9;
+        }
+
+
+        body.dark .notification-title {
+            color: #6ea1ff;
+        }
+
+
+        body.dark .notification p {
+            color: #d7e0ec;
+        }
+
+
+        /* =========================
+           CLASS CARD
+        ========================= */
+
+        .class-card {
+            background: white;
+
+            border:
+                1px solid #e1e6ed;
+
+            border-radius: 14px;
+
+            padding: 28px;
+
+            margin-bottom: 22px;
+        }
+
+
+        body.dark .class-card {
+            background: #171d27;
+
+            border-color:
+                #2a3340;
+        }
+
+
+        .class-label {
+            color: #1769ff;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .class-card h2 {
+            font-size: 26px;
+
+            margin-bottom: 12px;
+        }
+
+
+        .class-details {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 18px;
+
+            color: #667085;
+
+            font-size: 14px;
+        }
+
+
+        body.dark .class-details {
+            color: #aab4c3;
+        }
+
+
+        /* =========================
+           ACTION BUTTONS
+        ========================= */
+
+        .actions {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 14px;
+
+            margin-top: 24px;
+        }
+
+
+        .action-btn {
+            border:
+                1px solid #dce2e9;
+
+            background: white;
+
+            color: #172033;
+
+            padding: 15px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            transition:
+                border-color 0.2s ease,
+                color 0.2s ease;
+        }
+
+
+        .action-btn:hover {
+            border-color: #1769ff;
+
+            color: #1769ff;
+        }
+
+
+        body.dark .action-btn {
+            background: #1b222d;
+
+            border-color:
+                #303947;
+
+            color: #f2f5f9;
+        }
+
+
+        body.dark .action-btn:hover {
+            border-color: #6ea1ff;
+
+            color: #6ea1ff;
+        }
+
+
+        /* =========================
+           EDIT PANELS
+        ========================= */
+
+        .edit-panel {
+            display: none;
+
+            background: white;
+
+            border:
+                1px solid #e1e6ed;
+
+            border-radius: 14px;
+
+            padding: 25px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .edit-panel.active {
+            display: block;
+        }
+
+
+        body.dark .edit-panel {
+            background: #171d27;
+
+            border-color:
+                #2a3340;
+        }
+
+
+        .edit-panel h3 {
+            margin-bottom: 18px;
+        }
+
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+
+        .field label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 7px;
+        }
+
+
+        .field select {
+            width: 100%;
+
+            padding: 12px;
+
+            border:
+                1px solid #dce2e9;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #172033;
+
+            outline: none;
+        }
+
+
+        body.dark .field select {
+            background: #1b222d;
+
+            border-color:
+                #303947;
+
+            color: #f2f5f9;
+        }
+
+
+        .save-btn {
+            border: none;
+
+            background: #1769ff;
+
+            color: white;
+
+            padding:
+                12px 18px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+
+        .close-btn {
+            border:
+                1px solid #dce2e9;
+
+            background: transparent;
+
+            color: inherit;
+
+            padding:
+                12px 18px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            margin-left: 8px;
+        }
+
+
+        body.dark .close-btn {
+            border-color:
+                #303947;
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+            padding: 15px;
+
+            border-radius: 10px;
+
+            background: #f1f3f6;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+
+        body.dark .status {
+            background: #171d27;
+
+            color: #aab4c3;
+        }
+
+
+        /* =========================
+           MOBILE NAV
+        ========================= */
+
+        .mobile-nav {
+            display: none;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                height: 62px;
+
+                padding: 0 20px;
+            }
+
+
+            .nav-links {
+                display: none;
+            }
+
+
+            .page {
+                padding:
+                    40px 20px 90px;
+            }
+
+
+            .page h1 {
+                font-size: 34px;
+            }
+
+
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+
+            .mobile-nav {
+                position: fixed;
+
+                display: flex;
+
+                bottom: 0;
+                left: 0;
+                right: 0;
+
+                height: 65px;
+
+                background:
+                    rgba(255, 255, 255, 0.97);
+
+                border-top:
+                    1px solid #e5e9ef;
+
+                justify-content:
+                    space-around;
+
+                align-items: center;
+
+                z-index: 200;
+            }
+
+
+            body.dark .mobile-nav {
+                background:
+                    rgba(15, 20, 28, 0.97);
+
+                border-color:
+                    #252d3a;
+            }
+
+
+            .mobile-nav a {
+                font-size: 11px;
+
+                text-align: center;
+
+                color: #667085;
+            }
+
+
+            body.dark .mobile-nav a {
+                color: #aab4c3;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            CampusNav
+        </a>
+
+
+        <nav class="nav-links">
+
+            <a href="index.html">
+                Home
+            </a>
+
+            <a href="map.html">
+                Map
+            </a>
+
+            <a href="timetable.html">
+                Timetable
+            </a>
+
+            <a href="explore.html">
+                Explore
+            </a>
+
+            <a href="events.html">
+                Events
+            </a>
+
+            <a href="groups.html">
+                Groups
+            </a>
+
+        </nav>
+
+
+        <button
+            class="theme-toggle"
+            id="themeToggle"
+            onclick="toggleTheme()"
+        >
+            ☾
+        </button>
+
+    </header>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="page">
+
+        <div class="page-label">
+            CLASS REPRESENTATIVE
+        </div>
+
+
+        <h1>
+            CR Dashboard
+        </h1>
+
+
+        <p class="page-intro">
+            Manage important class updates and keep your classmates
+            informed when rooms, timings or classes change.
+        </p>
+
+
+
+        <!-- =========================
+             NOTIFICATION
+        ========================= -->
+
+        <div
+            class="notification"
+            id="notification"
+        >
+
+            <div class="notification-title">
+                🔔 STUDENT NOTIFICATION
+            </div>
+
+
+            <p id="notificationText">
+                Class information has been updated.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             CLASS CARD
+        ========================= -->
+
+        <section class="class-card">
+
+            <div class="class-label">
+                YOUR CLASS
+            </div>
+
+
+            <h2 id="classSubject">
+                Engineering Mathematics
+            </h2>
+
+
+            <div class="class-details">
+
+                <span id="classDay">
+                    Monday
+                </span>
+
+
+                <span id="classTime">
+                    10:00 AM – 11:00 AM
+                </span>
+
+
+                <span id="classLocation">
+                    Block A · Room 204
+                </span>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="action-btn"
+                    onclick="openRoomEditor()"
+                >
+                    Change Room
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="openTimeEditor()"
+                >
+                    Change Time
+                </button>
+
+
+                <button
+                    class="action-btn"
+                    onclick="cancelClass()"
+                >
+                    Cancel Class
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ROOM EDITOR
+        ========================= -->
+
+        <section
+            class="edit-panel"
+            id="roomEditor"
+        >
+
+            <h3>
+                Change Classroom
+            </h3>
+
+
+            <div class="field">
+
+                <label for="roomSelect">
+                    New Room
+                </label>
+
+
+                <select id="roomSelect">
+
+                    <option value="a204">
+                        Block A · Room 204
+                    </option>
+
+
+                    <option value="a201">
+                        Block A · Room 201
+                    </option>
+
+
+                    <option value="a105">
+                        Block A · Room 105
+                    </option>
+
+
+                    <option value="library">
+                        Library
+                    </option>
+
+
+                    <option value="cafeteria">
+                        Cafeteria
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                onclick="saveRoomChange()"
+            >
+                Save Room Change
+            </button>
+
+
+            <button
+                class="close-btn"
+                onclick="closeEditors()"
+            >
+                Cancel
+            </button>
+
+        </section>
+
+
+
+        <!-- =========================
+             TIME EDITOR
+        ========================= -->
+
+        <section
+            class="edit-panel"
+            id="timeEditor"
+        >
+
+            <h3>
+                Change Class Time
+            </h3>
+
+
+            <div class="field">
+
+                <label for="startTime">
+                    Start Time
+                </label>
+
+
+                <select id="startTime">
+
+                    <option value="09:00">
+                        9:00 AM
+                    </option>
+
+
+                    <option
+                        value="10:00"
+                        selected
+                    >
+                        10:00 AM
+                    </option>
+
+
+                    <option value="11:00">
+                        11:00 AM
+                    </option>
+
+
+                    <option value="12:00">
+                        12:00 PM
+                    </option>
+
+
+                    <option value="14:00">
+                        2:00 PM
+                    </option>
+
+
+                    <option value="15:00">
+                        3:00 PM
+                    </option>
+
+
+                    <option value="16:00">
+                        4:00 PM
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="endTime">
+                    End Time
+                </label>
+
+
+                <select id="endTime">
+
+                    <option value="10:00">
+                        10:00 AM
+                    </option>
+
+
+                    <option
+                        value="11:00"
+                        selected
+                    >
+                        11:00 AM
+                    </option>
+
+
+                    <option value="12:00">
+                        12:00 PM
+                    </option>
+
+
+                    <option value="13:00">
+                        1:00 PM
+                    </option>
+
+
+                    <option value="14:00">
+                        2:00 PM
+                    </option>
+
+
+                    <option value="15:00">
+                        3:00 PM
+                    </option>
+
+
+                    <option value="16:00">
+                        4:00 PM
+                    </option>
+
+
+                    <option value="17:00">
+                        5:00 PM
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="save-btn"
+                onclick="saveTimeChange()"
+            >
+                Save Time Change
+            </button>
+
+
+            <button
+                class="close-btn"
+                onclick="closeEditors()"
+            >
+                Cancel
+            </button>
+
+        </section>
+
+
+
+        <!-- =========================
+             STATUS
+        ========================= -->
+
+        <div
+            class="status"
+            id="statusMessage"
+        >
+            Changes are saved locally for this prototype.
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         MOBILE NAV
+    ========================= -->
+
+    <nav class="mobile-nav">
+
+        <a href="index.html">
+            🏠<br>
+            Home
+        </a>
+
+
+        <a href="map.html">
+            🧭<br>
+            Map
+        </a>
+
+
+        <a href="timetable.html">
+            📅<br>
+            Schedule
+        </a>
+
+
+        <a href="events.html">
+            🎉<br>
+            Events
+        </a>
+
+    </nav>
+
+
+
+    <!-- =========================
+         DATA
+    ========================= -->
+
+    <script src="campusData.js"></script>
+
+    <script src="timetableData.js"></script>
+
+
+
+    <script>
+
+        // ==========================================
+        // CR CONFIGURATION
+        // ==========================================
+
+        const CR_CLASS_ID =
+            "mon-maths";
+
+
+        // ==========================================
+        // LOAD OVERRIDES
+        // ==========================================
+
+        function loadOverrides() {
+
+            try {
+
+                return JSON.parse(
+                    localStorage.getItem(
+                        "campusnav-timetable-overrides"
+                    ) || "{}"
+                );
+
+            } catch (error) {
+
+                return {};
+
+            }
+        }
+
+
+        // ==========================================
+        // SAVE OVERRIDES
+        // ==========================================
+
+        function saveOverrides(overrides) {
+
+            localStorage.setItem(
+                "campusnav-timetable-overrides",
+                JSON.stringify(overrides)
+            );
+
+        }
+
+
+        // ==========================================
+        // GET CURRENT CLASS
+        // ==========================================
+
+        function getCurrentClass() {
+
+            const overrides =
+                loadOverrides();
+
+
+            const baseClass =
+                baseTimetable.find(
+                    classItem =>
+                        classItem.id ===
+                        CR_CLASS_ID
+                );
+
+
+            if (!baseClass) {
+                return null;
+            }
+
+
+            return {
+                ...baseClass,
+                ...(overrides[CR_CLASS_ID] || {})
+            };
+        }
+
+
+        // ==========================================
+        // LOCATION
+        // ==========================================
+
+        function getCampusLocation(
+            locationId
+        ) {
+
+            if (
+                typeof campusLocations ===
+                "undefined"
+            ) {
+                return null;
+            }
+
+
+            return campusLocations.find(
+                location =>
+                    location.id ===
+                    locationId
+            );
+        }
+
+
+        // ==========================================
+        // FORMAT TIME
+        // ==========================================
+
+        function formatTime(time) {
+
+            const [
+                hours,
+                minutes
+            ] = time
+                .split(":")
+                .map(Number);
+
+
+            const date =
+                new Date();
+
+
+            date.setHours(hours);
+
+            date.setMinutes(minutes);
+
+
+            return date.toLocaleTimeString(
+                [],
+                {
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            );
+        }
+
+
+        // ==========================================
+        // UPDATE DISPLAY
+        // ==========================================
+
+        function updateClassDisplay() {
+
+            const classItem =
+                getCurrentClass();
+
+
+            if (!classItem) {
+                return;
+            }
+
+
+            const location =
+                getCampusLocation(
+                    classItem.location
+                );
+
+
+            document.getElementById(
+                "classSubject"
+            ).textContent =
+                classItem.subject;
+
+
+            document.getElementById(
+                "classDay"
+            ).textContent =
+                classItem.day;
+
+
+            document.getElementById(
+                "classTime"
+            ).textContent =
+                `${formatTime(
+                    classItem.startTime
+                )} – ${formatTime(
+                    classItem.endTime
+                )}`;
+
+
+            document.getElementById(
+                "classLocation"
+            ).textContent =
+                location
+                    ? `${location.building || "Campus"} · ${location.name}`
+                    : "Campus · Unknown Room";
+
+
+            document.getElementById(
+                "roomSelect"
+            ).value =
+                classItem.location;
+
+
+            document.getElementById(
+                "startTime"
+            ).value =
+                classItem.startTime;
+
+
+            document.getElementById(
+                "endTime"
+            ).value =
+                classItem.endTime;
+        }
+
+
+        // ==========================================
+        // ROOM EDITOR
+        // ==========================================
+
+        function openRoomEditor() {
+
+            closeEditors();
+
+
+            document
+                .getElementById(
+                    "roomEditor"
+                )
+                .classList.add("active");
+
+        }
+
+
+        // ==========================================
+        // SAVE ROOM CHANGE
+        // ==========================================
+
+        function saveRoomChange() {
+
+            const classItem =
+                getCurrentClass();
+
+
+            const newLocation =
+                document.getElementById(
+                    "roomSelect"
+                ).value;
+
+
+            const oldLocation =
+                getCampusLocation(
+                    classItem.location
+                );
+
+
+            const updatedLocation =
+                getCampusLocation(
+                    newLocation
+                );
+
+
+            const overrides =
+                loadOverrides();
+
+
+            overrides[CR_CLASS_ID] = {
+
+                ...overrides[CR_CLASS_ID],
+
+                location:
+                    newLocation
+
+            };
+
+
+            saveOverrides(
+                overrides
+            );
+
+
+            updateClassDisplay();
+
+            closeEditors();
+
+
+            const oldName =
+                oldLocation
+                    ? oldLocation.name
+                    : "Previous room";
+
+
+            const newName =
+                updatedLocation
+                    ? updatedLocation.name
+                    : "New room";
+
+
+            showNotification(
+                `${classItem.subject} has moved from ${oldName} to ${newName}.`
+            );
+
+
+            updateStatus(
+                "Room change saved. Timetable, Home and navigation now use the updated room."
+            );
+
+        }
+
+
+        // ==========================================
+        // TIME EDITOR
+        // ==========================================
+
+        function openTimeEditor() {
+
+            closeEditors();
+
+
+            document
+                .getElementById(
+                    "timeEditor"
+                )
+                .classList.add("active");
+
+        }
+
+
+        // ==========================================
+        // SAVE TIME CHANGE
+        // ==========================================
+
+        function saveTimeChange() {
+
+            const startTime =
+                document.getElementById(
+                    "startTime"
+                ).value;
+
+
+            const endTime =
+                document.getElementById(
+                    "endTime"
+                ).value;
+
+
+            if (
+                startTime >= endTime
+            ) {
+
+                alert(
+                    "End time must be after start time."
+                );
+
+                return;
+            }
+
+
+            const classItem =
+                getCurrentClass();
+
+
+            const overrides =
+                loadOverrides();
+
+
+            overrides[CR_CLASS_ID] = {
+
+                ...overrides[CR_CLASS_ID],
+
+                startTime,
+
+                endTime
+
+            };
+
+
+            saveOverrides(
+                overrides
+            );
+
+
+            updateClassDisplay();
+
+            closeEditors();
+
+
+            showNotification(
+                `${classItem.subject} timing has changed to ${formatTime(startTime)} – ${formatTime(endTime)}.`
+            );
+
+
+            updateStatus(
+                "Time change saved. Timetable and Home now use the updated timing."
+            );
+
+        }
+
+
+        // ==========================================
+        // CANCEL CLASS
+        // ==========================================
+
+        function cancelClass() {
+
+            const classItem =
+                getCurrentClass();
+
+
+            const confirmed =
+                confirm(
+                    "Cancel Engineering Mathematics for this day?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            const overrides =
+                loadOverrides();
+
+
+            overrides[CR_CLASS_ID] = {
+
+                ...overrides[CR_CLASS_ID],
+
+                cancelled: true
+
+            };
+
+
+            saveOverrides(
+                overrides
+            );
+
+
+            showNotification(
+                `${classItem.subject} has been cancelled for ${classItem.day}.`
+            );
+
+
+            updateStatus(
+                "Class cancellation saved. Students would receive this notification in the full version."
+            );
+
+        }
+
+
+        // ==========================================
+        // NOTIFICATION
+        // ==========================================
+
+        function showNotification(
+            message
+        ) {
+
+            document.getElementById(
+                "notificationText"
+            ).textContent =
+                message;
+
+
+            document
+                .getElementById(
+                    "notification"
+                )
+                .classList.add(
+                    "active"
+                );
+        }
+
+
+        // ==========================================
+        // STATUS
+        // ==========================================
+
+        function updateStatus(
+            message
+        ) {
+
+            document.getElementById(
+                "statusMessage"
+            ).textContent =
+                message;
+        }
+
+
+        // ==========================================
+        // CLOSE EDITORS
+        // ==========================================
+
+        function closeEditors() {
+
+            document
+                .getElementById(
+                    "roomEditor"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+
+            document
+                .getElementById(
+                    "timeEditor"
+                )
+                .classList.remove(
+                    "active"
+                );
+        }
+
+
+        // ==========================================
+        // THEME
+        // ==========================================
+
+        function applyTheme() {
+
+            const savedTheme =
+                localStorage.getItem(
+                    "campusnav-theme"
+                );
+
+
+            if (
+                savedTheme === "dark"
+            ) {
+
+                document.body.classList.add(
+                    "dark"
+                );
+
+
+                document.getElementById(
+                    "themeToggle"
+                ).textContent =
+                    "☀";
+            }
+        }
+
+
+        function toggleTheme() {
+
+            document.body.classList.toggle(
+                "dark"
+            );
+
+
+            const isDark =
+                document.body.classList.contains(
+                    "dark"
+                );
+
+
+            localStorage.setItem(
+                "campusnav-theme",
+                isDark
+                    ? "dark"
+                    : "light"
+            );
+
+
+            document.getElementById(
+                "themeToggle"
+            ).textContent =
+                isDark
+                    ? "☀"
+                    : "☾";
+        }
+
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+
+        applyTheme();
+
+        updateClassDisplay();
+
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#ffffff"
+    >
+
+    <title>CampusNav | Campus Map</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           MAP-SPECIFIC THEME
+           ===================================================== */
+
+        :root {
+            --map-bg: #f5f7fa;
+            --campus-bg: #e8f0e8;
+            --road-color: #c7ced8;
+            --building-color: #dce3ea;
+            --building-stroke: #b8c2ce;
+            --map-text: #334155;
+            --map-muted: #64748b;
+            --map-shadow: rgba(15, 23, 42, 0.10);
+        }
+
+
+        [data-theme="dark"] {
+            --map-bg: #0f1724;
+            --campus-bg: #14231c;
+            --road-color: #273446;
+            --building-color: #263447;
+            --building-stroke: #3b4b61;
+            --map-text: #e2e8f0;
+            --map-muted: #94a3b8;
+            --map-shadow: rgba(0, 0, 0, 0.35);
+        }
+
+
+        /* =====================================================
+           MAP PAGE
+           ===================================================== */
+
+        .map-page {
+            width: min(1400px, 94%);
+            margin: 0 auto;
+            padding: 42px 0 100px;
+        }
+
+
+        .map-heading {
+            margin-bottom: 24px;
+        }
+
+
+        .map-heading h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            letter-spacing: -0.04em;
+        }
+
+
+        .map-heading p {
+            margin: 0;
+            color: var(--muted-text, #64748b);
+            font-size: 1rem;
+        }
+
+
+        /* =====================================================
+           SEARCH
+           ===================================================== */
+
+        .map-search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+
+        .map-search input {
+            flex: 1;
+            min-width: 0;
+            height: 48px;
+            padding: 0 16px;
+
+            border: 1px solid var(--border-color, #dbe2ea);
+            border-radius: 12px;
+
+            background: var(--card-bg, #ffffff);
+            color: var(--text-color, #111827);
+
+            font-size: 15px;
+            outline: none;
+
+            transition:
+                border-color 150ms ease,
+                box-shadow 150ms ease;
+        }
+
+
+        .map-search input:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.12);
+        }
+
+
+        .map-btn {
+            height: 48px;
+            padding: 0 18px;
+
+            border: none;
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-weight: 650;
+            font-size: 14px;
+
+            transition:
+                transform 140ms ease,
+                background 140ms ease;
+        }
+
+
+        .map-btn:active {
+            transform: scale(0.96);
+        }
+
+
+        .map-btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        .map-btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+
+        .map-btn-secondary {
+            background: var(--card-bg, #ffffff);
+            color: var(--text-color, #111827);
+
+            border:
+                1px solid
+                var(--border-color, #dbe2ea);
+        }
+
+
+        .map-btn-secondary:hover {
+            background: var(--hover-bg, #f8fafc);
+        }
+
+
+        /* =====================================================
+           ROUTE INFORMATION
+           ===================================================== */
+
+        #routeInfo {
+            margin-bottom: 16px;
+        }
+
+
+        .route-card {
+            padding: 18px;
+
+            background: var(--card-bg, #ffffff);
+
+            border:
+                1px solid
+                var(--border-color, #dbe2ea);
+
+            border-radius: 16px;
+
+            color: var(--text-color, #111827);
+
+            box-shadow:
+                0 8px 30px
+                rgba(15, 23, 42, 0.06);
+        }
+
+
+        .route-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+
+        .route-eyebrow {
+            display: block;
+            margin-bottom: 5px;
+
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+
+            color: #2563eb;
+        }
+
+
+        .route-card h3 {
+            margin: 0 0 4px;
+
+            color: var(--text-color, #111827);
+
+            font-size: 20px;
+        }
+
+
+        .route-card p {
+            margin: 0;
+
+            color: var(--muted-text, #64748b);
+
+            font-size: 13px;
+        }
+
+
+        .route-distance {
+            text-align: right;
+        }
+
+
+        .route-distance strong {
+            display: block;
+
+            color: var(--text-color, #111827);
+
+            font-size: 20px;
+        }
+
+
+        .route-distance span {
+            color: var(--muted-text, #64748b);
+            font-size: 11px;
+        }
+
+
+        .route-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-top: 16px;
+            padding-top: 14px;
+
+            border-top:
+                1px solid
+                var(--border-color, #e2e8f0);
+        }
+
+
+        .route-step {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 10px;
+
+            border-radius: 9px;
+
+            background: var(--soft-bg, #f8fafc);
+
+            color: var(--text-color, #334155);
+
+            font-size: 12px;
+        }
+
+
+        .route-step-icon {
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+
+        .route-error {
+            padding: 18px;
+
+            border:
+                1px solid
+                var(--border-color, #dbe2ea);
+
+            border-radius: 16px;
+
+            background: var(--card-bg, #ffffff);
+
+            color: var(--text-color, #111827);
+        }
+
+
+        .route-error strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #dc2626;
+        }
+
+
+        .route-error span {
+            color: var(--muted-text, #64748b);
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MAP
+           ===================================================== */
+
+        .map-shell {
+            position: relative;
+
+            width: 100%;
+            height: min(70vh, 680px);
+            min-height: 470px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                var(--border-color, #dbe2ea);
+
+            border-radius: 22px;
+
+            background: var(--map-bg);
+
+            box-shadow:
+                0 20px 60px
+                var(--map-shadow);
+        }
+
+
+        .map-container {
+            position: absolute;
+            inset: 0;
+
+            overflow: hidden;
+
+            cursor: grab;
+
+            user-select: none;
+            touch-action: none;
+        }
+
+
+        .map-container.is-dragging {
+            cursor: grabbing;
+        }
+
+
+        #campusMap {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+
+            user-select: none;
+            touch-action: none;
+        }
+
+
+        #mapScene {
+            transform-origin: 400px 250px;
+            will-change: transform;
+        }
+
+
+        /* =====================================================
+           ACTUAL MAP COLORS
+           This overrides the generic style.css map colors.
+           ===================================================== */
+
+        #campusMap .base-map {
+            fill: var(--map-bg) !important;
+        }
+
+
+        #campusMap .building {
+            fill: var(--building-color) !important;
+
+            stroke:
+                var(--building-stroke) !important;
+
+            stroke-width: 2 !important;
+        }
+
+
+        #campusMap .campus-road {
+            stroke:
+                var(--road-color) !important;
+
+            fill: none !important;
+
+            stroke-width: 28 !important;
+
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+
+        #campusMap .main-road {
+            stroke-width: 34 !important;
+        }
+
+
+        #campusMap .building-label {
+            fill: var(--map-text) !important;
+
+            font-weight: 700;
+        }
+
+
+        #campusMap .room-label {
+            fill: var(--map-muted) !important;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           MAP CONTROLS
+           ===================================================== */
+
+        .map-controls {
+            position: absolute;
+
+            top: 18px;
+            right: 18px;
+
+            z-index: 50;
+
+            display: flex;
+            flex-direction: column;
+
+            width: 46px;
+
+            overflow: hidden;
+
+            border:
+                1px solid
+                rgba(15, 23, 42, 0.10);
+
+            border-radius: 14px;
+
+            background:
+                rgba(255, 255, 255, 0.94);
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.16);
+
+            backdrop-filter: blur(14px);
+        }
+
+
+        .map-control {
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+
+            background: transparent;
+            color: #111827;
+
+            cursor: pointer;
+
+            font-size: 23px;
+            font-weight: 600;
+
+            transition:
+                background 140ms ease,
+                transform 140ms ease;
+        }
+
+
+        .map-control:hover {
+            background:
+                rgba(37, 99, 235, 0.08);
+        }
+
+
+        .map-control:active {
+            transform: scale(0.90);
+        }
+
+
+        .map-control-divider {
+            height: 1px;
+            margin: 0 8px;
+
+            background:
+                rgba(15, 23, 42, 0.10);
+        }
+
+
+        .zoom-level {
+            width: 46px;
+            height: 26px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #64748b;
+
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+
+        .map-control.compass {
+            font-size: 13px;
+            font-weight: 850;
+            color: #2563eb;
+        }
+
+
+        /* =====================================================
+           FLOOR CONTROLS
+           ===================================================== */
+
+        .floor-controls {
+            position: absolute;
+
+            left: 18px;
+            top: 18px;
+
+            z-index: 50;
+
+            display: flex;
+
+            padding: 4px;
+
+            border:
+                1px solid
+                rgba(15, 23, 42, 0.10);
+
+            border-radius: 12px;
+
+            background:
+                rgba(255, 255, 255, 0.94);
+
+            box-shadow:
+                0 10px 30px
+                rgba(15, 23, 42, 0.12);
+
+            backdrop-filter: blur(14px);
+        }
+
+
+        .floor-btn {
+            height: 34px;
+
+            padding: 0 13px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: transparent;
+
+            color: #64748b;
+
+            cursor: pointer;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        .floor-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+
+
+        /* =====================================================
+           MAP OVERLAY
+           ===================================================== */
+
+        .map-overlay {
+            position: absolute;
+
+            left: 18px;
+            bottom: 18px;
+
+            z-index: 30;
+
+            padding: 9px 12px;
+
+            border:
+                1px solid
+                rgba(15, 23, 42, 0.08);
+
+            border-radius: 10px;
+
+            background:
+                rgba(255, 255, 255, 0.88);
+
+            color: #475569;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            backdrop-filter: blur(12px);
+        }
+
+
+        /* =====================================================
+           DESTINATION
+           ===================================================== */
+
+        .destination-highlight {
+            animation:
+                destinationPulse
+                1.5s
+                ease-in-out
+                infinite;
+
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+
+        @keyframes destinationPulse {
+
+            0% {
+                opacity: 0.85;
+                transform: scale(0.9);
+            }
+
+            50% {
+                opacity: 0.25;
+                transform: scale(1.35);
+            }
+
+            100% {
+                opacity: 0.85;
+                transform: scale(0.9);
+            }
+
+        }
+
+
+        /* =====================================================
+           DARK MAP CONTROLS
+           ===================================================== */
+
+        [data-theme="dark"] .map-controls,
+        [data-theme="dark"] .floor-controls {
+
+            background:
+                rgba(15, 23, 42, 0.94);
+
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            box-shadow:
+                0 12px 35px
+                rgba(0, 0, 0, 0.35);
+        }
+
+
+        [data-theme="dark"] .map-control {
+            color: #e5e7eb;
+        }
+
+
+        [data-theme="dark"] .map-control:hover {
+            background:
+                rgba(96, 165, 250, 0.10);
+        }
+
+
+        [data-theme="dark"] .map-control-divider {
+            background:
+                rgba(255, 255, 255, 0.10);
+        }
+
+
+        [data-theme="dark"] .zoom-level {
+            color: #94a3b8;
+        }
+
+
+        [data-theme="dark"] .floor-btn {
+            color: #94a3b8;
+        }
+
+
+        [data-theme="dark"] .floor-btn.active {
+            color: white;
+        }
+
+
+        [data-theme="dark"] .map-overlay {
+            background:
+                rgba(15, 23, 42, 0.88);
+
+            border-color:
+                rgba(255, 255, 255, 0.08);
+
+            color: #cbd5e1;
+        }
+
+
+        [data-theme="dark"] .map-search input {
+            background: #151d2b;
+            border-color: #263449;
+            color: #f8fafc;
+        }
+
+
+        [data-theme="dark"] .map-search input::placeholder {
+            color: #64748b;
+        }
+
+
+        [data-theme="dark"] .map-btn-secondary {
+            background: #151d2b;
+            border-color: #263449;
+            color: #e2e8f0;
+        }
+
+
+        [data-theme="dark"] .map-btn-secondary:hover {
+            background: #1d2838;
+        }
+
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .map-page {
+                width: 94%;
+                padding-top: 28px;
+            }
+
+
+            .map-search {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+
+            .map-search input {
+                grid-column: 1 / -1;
+            }
+
+
+            .map-shell {
+                height: 62vh;
+                min-height: 430px;
+                border-radius: 18px;
+            }
+
+
+            .map-controls {
+                top: 12px;
+                right: 12px;
+            }
+
+
+            .floor-controls {
+                top: 12px;
+                left: 12px;
+            }
+
+
+            .map-overlay {
+                left: 12px;
+                bottom: 12px;
+            }
+
+
+            .route-card-top {
+                flex-direction: column;
+            }
+
+
+            .route-distance {
+                text-align: left;
+            }
+
+        }
+
+    </style>
+
+
+    <script>
+
+        /* Load saved theme before rendering */
+
+        (function () {
+
+            const savedTheme =
+                localStorage.getItem(
+                    "campusnav-theme"
+                );
+
+            if (savedTheme) {
+
+                document.documentElement.dataset.theme =
+                    savedTheme;
+
+            }
+
+        })();
+
+    </script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <a
+        href="index.html"
+        class="logo"
+    >
+        Campus<span>Nav</span>
+    </a>
+
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a
+            href="map.html"
+            class="active"
+        >
+            Map
+        </a>
+
+        <a href="timetable.html">
+            Timetable
+        </a>
+
+        <a href="explore.html">
+            Explore
+        </a>
+
+        <a href="events.html">
+            Events
+        </a>
+
+        <a href="groups.html">
+            Groups
+        </a>
+
+    </nav>
+
+
+    <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+        aria-label="Toggle theme"
+    >
+        🌙
+    </button>
+
+</header>
+
+
+<main class="map-page">
+
+
+    <section class="map-heading">
+
+        <h1>
+            Campus Map
+        </h1>
+
+        <p>
+            Search for a room, building or place
+            and CampusNav will find the route.
+        </p>
+
+    </section>
+
+
+    <!-- SEARCH -->
+
+    <div class="map-search">
+
+        <input
+            type="text"
+            id="locationSearch"
+            placeholder="Search rooms, buildings or places..."
+            autocomplete="off"
+            onkeydown="handleSearchKey(event)"
+        >
+
+
+        <button
+            class="map-btn map-btn-primary"
+            type="button"
+            onclick="searchLocation()"
+        >
+            Search
+        </button>
+
+
+        <button
+            class="map-btn map-btn-secondary"
+            type="button"
+            onclick="clearRoute()"
+        >
+            Clear
+        </button>
+
+    </div>
+
+
+    <!-- ROUTE INFO -->
+
+    <div id="routeInfo"></div>
+
+
+    <!-- MAP -->
+
+    <div class="map-shell">
+
+        <div class="map-container">
+
+
+            <!-- FLOOR CONTROLS -->
+
+            <div class="floor-controls">
+
+                <button
+                    class="floor-btn active"
+                    data-floor="ground"
+                    type="button"
+                    onclick="switchFloor('ground')"
+                >
+                    Ground
+                </button>
+
+
+                <button
+                    class="floor-btn"
+                    data-floor="first"
+                    type="button"
+                    onclick="switchFloor('first')"
+                >
+                    1st Floor
+                </button>
+
+            </div>
+
+
+            <!-- MAP CONTROLS -->
+
+            <div class="map-controls">
+
+                <button
+                    id="zoomIn"
+                    class="map-control"
+                    type="button"
+                >
+                    +
+                </button>
+
+
+                <div
+                    id="zoomLevel"
+                    class="zoom-level"
+                >
+                    100%
+                </div>
+
+
+                <button
+                    id="zoomOut"
+                    class="map-control"
+                    type="button"
+                >
+                    −
+                </button>
+
+
+                <div class="map-control-divider"></div>
+
+
+                <button
+                    id="recenterMap"
+                    class="map-control"
+                    type="button"
+                >
+                    ⌾
+                </button>
+
+
+                <button
+                    id="compass"
+                    class="map-control compass"
+                    type="button"
+                >
+                    N
+                </button>
+
+            </div>
+
+
+            <!-- SVG MAP -->
+
+            <svg
+                id="campusMap"
+                viewBox="0 0 800 500"
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+            >
+
+                <g id="mapScene">
+
+
+                    <!-- MAP BACKGROUND -->
+
+                    <rect
+                        class="base-map"
+                        x="0"
+                        y="0"
+                        width="800"
+                        height="500"
+                    />
+
+
+                    <!-- CAMPUS AREA -->
+
+                    <rect
+                        x="35"
+                        y="35"
+                        width="730"
+                        height="430"
+                        rx="30"
+                        fill="var(--campus-bg)"
+                    />
+
+
+                    <!-- ROADS -->
+
+                    <path
+                        class="campus-road main-road"
+                        d="M400 465 L400 410 L400 350"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 410 L225 410 L150 340 L130 290"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M575 410 L650 340 L670 290"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 350 L315 350"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 350 L485 350"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 300 L400 250 L400 220"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 220 L340 220 L340 260"
+                    />
+
+
+                    <path
+                        class="campus-road"
+                        d="M400 220 L460 220 L460 260"
+                    />
+
+
+                    <!-- LIBRARY -->
+
+                    <rect
+                        class="building"
+                        x="80"
+                        y="210"
+                        width="100"
+                        height="80"
+                        rx="10"
+                    />
+
+
+                    <text
+                        class="building-label"
+                        x="130"
+                        y="253"
+                        text-anchor="middle"
+                    >
+                        Library
+                    </text>
+
+
+                    <!-- CAFETERIA -->
+
+                    <rect
+                        class="building"
+                        x="620"
+                        y="210"
+                        width="100"
+                        height="80"
+                        rx="10"
+                    />
+
+
+                    <text
+                        class="building-label"
+                        x="670"
+                        y="253"
+                        text-anchor="middle"
+                    >
+                        Cafeteria
+                    </text>
+
+
+                    <!-- BLOCK A -->
+
+                    <rect
+                        class="building"
+                        x="340"
+                        y="320"
+                        width="120"
+                        height="70"
+                        rx="10"
+                    />
+
+
+                    <text
+                        class="building-label"
+                        x="400"
+                        y="358"
+                        text-anchor="middle"
+                    >
+                        Block A
+                    </text>
+
+
+                    <!-- ROOM 105 -->
+
+                    <rect
+                        class="building"
+                        x="245"
+                        y="325"
+                        width="70"
+                        height="50"
+                        rx="7"
+                    />
+
+
+                    <text
+                        class="room-label"
+                        x="280"
+                        y="354"
+                        text-anchor="middle"
+                    >
+                        Room 105
+                    </text>
+
+
+                    <!-- STAIRS -->
+
+                    <rect
+                        class="building"
+                        x="380"
+                        y="280"
+                        width="40"
+                        height="40"
+                        rx="7"
+                    />
+
+
+                    <text
+                        class="room-label"
+                        x="400"
+                        y="305"
+                        text-anchor="middle"
+                    >
+                        Stairs
+                    </text>
+
+
+                    <!-- MAIN GATE -->
+
+                    <text
+                        class="building-label"
+                        x="400"
+                        y="492"
+                        text-anchor="middle"
+                    >
+                        Main Gate
+                    </text>
+
+
+                    <!-- PHYSICS LAB -->
+
+                    <text
+                        class="room-label"
+                        x="280"
+                        y="395"
+                        text-anchor="middle"
+                    >
+                        Physics Lab
+                    </text>
+
+
+                    <!-- FIRST FLOOR -->
+
+                    <g id="firstFloor">
+
+                        <rect
+                            class="building"
+                            x="340"
+                            y="205"
+                            width="120"
+                            height="70"
+                            rx="10"
+                        />
+
+
+                        <text
+                            class="building-label"
+                            x="400"
+                            y="245"
+                            text-anchor="middle"
+                        >
+                            First Floor
+                        </text>
+
+
+                        <!-- ROOM 201 -->
+
+                        <rect
+                            class="building"
+                            x="305"
+                            y="155"
+                            width="70"
+                            height="50"
+                            rx="7"
+                        />
+
+
+                        <text
+                            class="room-label"
+                            x="340"
+                            y="185"
+                            text-anchor="middle"
+                        >
+                            Room 201
+                        </text>
+
+
+                        <!-- ROOM 204 -->
+
+                        <rect
+                            class="building"
+                            x="425"
+                            y="155"
+                            width="70"
+                            height="50"
+                            rx="7"
+                        />
+
+
+                        <text
+                            class="room-label"
+                            x="460"
+                            y="185"
+                            text-anchor="middle"
+                        >
+                            Room 204
+                        </text>
+
+                    </g>
+
+
+                    <!-- ROUTE LAYER -->
+
+                    <g id="routeLayer"></g>
+
+                </g>
+
+            </svg>
+
+
+            <div class="map-overlay">
+                🧭 CampusNav routing
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- MOBILE NAV -->
+
+<div class="mobile-nav">
+
+    <a href="index.html">
+
+        <span class="mobile-nav-icon">
+            🏠
+        </span>
+
+        Home
+
+    </a>
+
+
+    <a
+        href="map.html"
+        class="active"
+    >
+
+        <span class="mobile-nav-icon">
+            🗺️
+        </span>
+
+        Map
+
+    </a>
+
+
+    <a href="timetable.html">
+
+        <span class="mobile-nav-icon">
+            📅
+        </span>
+
+        Schedule
+
+    </a>
+
+
+    <a href="events.html">
+
+        <span class="mobile-nav-icon">
+            🎉
+        </span>
+
+        Events
+
+    </a>
+
+</div>
+
+
+<!-- SCRIPTS -->
+
+<script src="campusData.js"></script>
+
+<script src="script.js"></script>
+
+
+<script>
+
+    const themeToggle =
+        document.getElementById(
+            "themeToggle"
+        );
+
+
+    function updateThemeButton() {
+
+        if (!themeToggle) {
+            return;
+        }
+
+
+        const theme =
+            document.documentElement.dataset.theme;
+
+
+        themeToggle.textContent =
+            theme === "light"
+                ? "☀️"
+                : "🌙";
+
+    }
+
+
+    if (themeToggle) {
+
+        themeToggle.addEventListener(
+            "click",
+            function () {
+
+                const current =
+                    document.documentElement.dataset.theme ||
+                    "dark";
+
+
+                const next =
+                    current === "light"
+                        ? "dark"
+                        : "light";
+
+
+                document.documentElement.dataset.theme =
+                    next;
+
+
+                localStorage.setItem(
+                    "campusnav-theme",
+                    next
+                );
+
+
+                updateThemeButton();
+
+            }
+        );
+
+    }
+
+
+    updateThemeButton();
+
+</script>
+
+
+</body>
+
+</html>

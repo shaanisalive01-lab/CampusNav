@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#080b12"
+    >
+
+    <title>CampusNav | Groups</title>
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <style>
+
+        .groups-main {
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            padding:
+                48px 28px 100px;
+        }
+
+
+        .groups-hero {
+            margin-bottom: 32px;
+        }
+
+
+        .groups-hero h1 {
+            margin:
+                8px 0 10px;
+
+            font-size:
+                clamp(2.4rem, 5vw, 3.8rem);
+
+            line-height: 1;
+
+            letter-spacing:
+                -0.045em;
+        }
+
+
+        .groups-hero p {
+            margin: 0;
+
+            max-width: 650px;
+
+            color:
+                var(--text-muted, #9ca3af);
+
+            line-height: 1.6;
+        }
+
+
+        .groups-search {
+            display: flex;
+
+            align-items: center;
+
+            gap: 12px;
+
+            padding:
+                12px 16px;
+
+            margin-bottom: 20px;
+
+            background:
+                var(--card-bg, #11151d);
+
+            border:
+                1px solid var(--border, #242936);
+
+            border-radius: 14px;
+        }
+
+
+        .groups-search span {
+            color:
+                var(--text-muted, #9ca3af);
+        }
+
+
+        .groups-search input {
+            flex: 1;
+
+            min-width: 0;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            color:
+                var(--text, #f5f7fb);
+        }
+
+
+        .group-filters {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 9px;
+
+            margin-bottom: 34px;
+        }
+
+
+        .group-filter {
+            padding:
+                9px 15px;
+
+            border:
+                1px solid var(--border, #242936);
+
+            border-radius: 10px;
+
+            background:
+                var(--card-bg, #11151d);
+
+            color:
+                var(--text-muted, #9ca3af);
+
+            cursor: pointer;
+        }
+
+
+        .group-filter.active {
+            background:
+                var(--accent, #4f7cff);
+
+            border-color:
+                var(--accent, #4f7cff);
+
+            color: white;
+        }
+
+
+        .group-section {
+            margin-bottom: 46px;
+        }
+
+
+        .group-section h2 {
+            margin:
+                0 0 17px;
+
+            font-size: 1.4rem;
+        }
+
+
+        .groups-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 16px;
+        }
+
+
+        .group-card {
+            padding: 20px;
+
+            background:
+                var(--card-bg, #11151d);
+
+            border:
+                1px solid var(--border, #242936);
+
+            border-radius: 16px;
+
+            transition:
+                transform .2s ease,
+                border-color .2s ease;
+        }
+
+
+        .group-card:hover {
+            transform:
+                translateY(-3px);
+
+            border-color:
+                rgba(79,124,255,.45);
+        }
+
+
+        .group-icon {
+            width: 44px;
+
+            height: 44px;
+
+            display: grid;
+
+            place-items: center;
+
+            margin-bottom: 16px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(79,124,255,.1);
+
+            font-size: 1.25rem;
+        }
+
+
+        .group-card h3 {
+            margin:
+                0 0 7px;
+
+            font-size: 1rem;
+        }
+
+
+        .group-card p {
+            margin:
+                6px 0;
+
+            color:
+                var(--text-muted, #9ca3af);
+
+            font-size: .8rem;
+
+            line-height: 1.5;
+        }
+
+
+        .group-meta {
+            margin-top: 14px;
+
+            padding-top: 14px;
+
+            border-top:
+                1px solid var(--border, #242936);
+
+            color:
+                var(--text-muted, #9ca3af);
+
+            font-size: .74rem;
+        }
+
+
+        .group-actions {
+            display: flex;
+
+            gap: 9px;
+
+            margin-top: 17px;
+        }
+
+
+        .group-button {
+            flex: 1;
+
+            padding:
+                9px 12px;
+
+            border:
+                1px solid var(--border, #242936);
+
+            border-radius: 9px;
+
+            background:
+                transparent;
+
+            color:
+                var(--text, #f5f7fb);
+
+            cursor: pointer;
+
+            font-size: .78rem;
+
+            text-align: center;
+
+            text-decoration: none;
+        }
+
+
+        .group-button.primary {
+            background:
+                var(--accent, #4f7cff);
+
+            border-color:
+                var(--accent, #4f7cff);
+
+            color: white;
+        }
+
+
+        .no-groups {
+            display: none;
+
+            padding: 40px;
+
+            text-align: center;
+
+            color:
+                var(--text-muted, #9ca3af);
+
+            border:
+                1px dashed var(--border, #242936);
+
+            border-radius: 16px;
+        }
+
+
+        @media (max-width: 900px) {
+
+            .groups-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .groups-main {
+                padding:
+                    32px 18px 90px;
+            }
+
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+
+    <script>
+
+        (function () {
+
+            const savedTheme =
+                localStorage.getItem("campusnav-theme");
+
+            if (savedTheme) {
+
+                document.documentElement.dataset.theme =
+                    savedTheme;
+
+            }
+
+        })();
+
+    </script>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <a href="index.html" class="logo">
+        Campus<span>Nav</span>
+    </a>
+
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="map.html">
+            Map
+        </a>
+
+        <a href="timetable.html">
+            Timetable
+        </a>
+
+        <a href="explore.html">
+            Explore
+        </a>
+
+        <a href="events.html">
+            Events
+        </a>
+
+        <a
+            href="groups.html"
+            class="active"
+        >
+            Groups
+        </a>
+
+    </nav>
+
+
+    <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+    >
+        🌙
+    </button>
+
+</header>
+
+
+
+<main class="groups-main">
+
+
+    <section class="groups-hero">
+
+        <p class="eyebrow">
+            CAMPUS COMMUNITY
+        </p>
+
+        <h1>
+            Find your people.
+        </h1>
+
+        <p>
+            Join clubs, study groups and communities
+            built around the things students actually do.
+        </p>
+
+    </section>
+
+
+
+    <div class="groups-search">
+
+        <span>
+            ⌕
+        </span>
+
+        <input
+            id="groupSearch"
+            type="text"
+            placeholder="Search groups..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+
+    <div class="group-filters">
+
+        <button
+            class="group-filter active"
+            data-filter="all"
+        >
+            All
+        </button>
+
+        <button
+            class="group-filter"
+            data-filter="academic"
+        >
+            Academic
+        </button>
+
+        <button
+            class="group-filter"
+            data-filter="technical"
+        >
+            Technical
+        </button>
+
+        <button
+            class="group-filter"
+            data-filter="social"
+        >
+            Social
+        </button>
+
+    </div>
+
+
+
+    <!-- MY GROUPS -->
+
+    <section class="group-section">
+
+        <p class="eyebrow">
+            YOUR GROUPS
+        </p>
+
+        <h2>
+            My Groups
+        </h2>
+
+
+        <div class="groups-grid">
+
+
+            <article
+                class="group-card"
+                data-category="technical"
+                data-name="robotics club"
+            >
+
+                <div class="group-icon">
+                    🤖
+                </div>
+
+                <h3>
+                    Robotics Club
+                </h3>
+
+                <p>
+                    Build, experiment and work on
+                    robotics projects together.
+                </p>
+
+                <div class="group-meta">
+                    👥 42 members · 📍 Block A
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="showGroup('Robotics Club')"
+                    >
+                        View Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=block-a"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="academic"
+                data-name="engineering maths study group"
+            >
+
+                <div class="group-icon">
+                    📐
+                </div>
+
+                <h3>
+                    Engineering Maths Study Group
+                </h3>
+
+                <p>
+                    Work through problems, revise
+                    and survive mathematics together.
+                </p>
+
+                <div class="group-meta">
+                    👥 18 members · 📍 Library
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="showGroup('Engineering Maths Study Group')"
+                    >
+                        View Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=library"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- DISCOVER -->
+
+    <section class="group-section">
+
+        <p class="eyebrow">
+            DISCOVER
+        </p>
+
+        <h2>
+            Find a Group
+        </h2>
+
+
+        <div
+            class="groups-grid"
+            id="groupsGrid"
+        >
+
+
+            <article
+                class="group-card"
+                data-category="technical"
+                data-name="cad design"
+            >
+
+                <div class="group-icon">
+                    🧩
+                </div>
+
+                <h3>
+                    CAD & Design
+                </h3>
+
+                <p>
+                    Design, CAD modelling and
+                    engineering projects.
+                </p>
+
+                <div class="group-meta">
+                    👥 27 members · 📍 Room 204
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('CAD & Design')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=a204"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="social"
+                data-name="f1 motorsport"
+            >
+
+                <div class="group-icon">
+                    🏎️
+                </div>
+
+                <h3>
+                    F1 & Motorsport
+                </h3>
+
+                <p>
+                    Motorsport discussions,
+                    racing and car culture.
+                </p>
+
+                <div class="group-meta">
+                    👥 31 members · 📍 Library
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('F1 & Motorsport')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=library"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="technical"
+                data-name="sih innovation"
+            >
+
+                <div class="group-icon">
+                    💡
+                </div>
+
+                <h3>
+                    SIH & Innovation
+                </h3>
+
+                <p>
+                    Hackathons, prototypes and
+                    student innovation projects.
+                </p>
+
+                <div class="group-meta">
+                    👥 24 members · 📍 Block A
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('SIH & Innovation')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=block-a"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="social"
+                data-name="campus gaming"
+            >
+
+                <div class="group-icon">
+                    🎮
+                </div>
+
+                <h3>
+                    Campus Gaming
+                </h3>
+
+                <p>
+                    Games, tournaments and
+                    casual gaming sessions.
+                </p>
+
+                <div class="group-meta">
+                    👥 36 members · 📍 Cafeteria
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('Campus Gaming')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=cafeteria"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="social"
+                data-name="photography media"
+            >
+
+                <div class="group-icon">
+                    📷
+                </div>
+
+                <h3>
+                    Photography & Media
+                </h3>
+
+                <p>
+                    Photography, video, editing
+                    and campus content.
+                </p>
+
+                <div class="group-meta">
+                    👥 21 members · 📍 Main Gate
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('Photography & Media')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=main-gate"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+
+            <article
+                class="group-card"
+                data-category="academic"
+                data-name="entrepreneurship hub"
+            >
+
+                <div class="group-icon">
+                    🚀
+                </div>
+
+                <h3>
+                    Entrepreneurship Hub
+                </h3>
+
+                <p>
+                    Ideas, startups, business and
+                    student-led projects.
+                </p>
+
+                <div class="group-meta">
+                    👥 19 members · 📍 Block A
+                </div>
+
+                <div class="group-actions">
+
+                    <button
+                        class="group-button"
+                        onclick="joinGroup('Entrepreneurship Hub')"
+                    >
+                        Join Group
+                    </button>
+
+                    <a
+                        class="group-button primary"
+                        href="map.html?destination=block-a"
+                    >
+                        Navigate
+                    </a>
+
+                </div>
+
+            </article>
+
+
+        </div>
+
+
+        <div
+            class="no-groups"
+            id="noGroups"
+        >
+            No groups found.
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- MOBILE NAVIGATION -->
+
+<div class="mobile-nav">
+
+    <a href="index.html">
+
+        <span class="mobile-nav-icon">
+            🏠
+        </span>
+
+        Home
+
+    </a>
+
+
+    <a href="map.html">
+
+        <span class="mobile-nav-icon">
+            🗺️
+        </span>
+
+        Map
+
+    </a>
+
+
+    <a href="timetable.html">
+
+        <span class="mobile-nav-icon">
+            📅
+        </span>
+
+        Schedule
+
+    </a>
+
+
+    <a href="events.html">
+
+        <span class="mobile-nav-icon">
+            🎉
+        </span>
+
+        Events
+
+    </a>
+
+</div>
+
+
+
+<script>
+
+    const themeToggle =
+        document.getElementById("themeToggle");
+
+
+    function updateThemeButton() {
+
+        const theme =
+            document.documentElement.dataset.theme;
+
+        themeToggle.textContent =
+            theme === "light"
+                ? "☀️"
+                : "🌙";
+
+    }
+
+
+    themeToggle.addEventListener(
+        "click",
+        function () {
+
+            const current =
+                document.documentElement.dataset.theme;
+
+            const next =
+                current === "light"
+                    ? "dark"
+                    : "light";
+
+
+            document.documentElement.dataset.theme =
+                next;
+
+
+            localStorage.setItem(
+                "campusnav-theme",
+                next
+            );
+
+
+            updateThemeButton();
+
+        }
+    );
+
+
+    updateThemeButton();
+
+
+
+    const filters =
+        document.querySelectorAll(
+            ".group-filter"
+        );
+
+
+    const cards =
+        document.querySelectorAll(
+            ".group-card"
+        );
+
+
+    const search =
+        document.getElementById(
+            "groupSearch"
+        );
+
+
+    const noGroups =
+        document.getElementById(
+            "noGroups"
+        );
+
+
+    let currentFilter = "all";
+
+
+    function updateGroups() {
+
+        const query =
+            search.value
+                .trim()
+                .toLowerCase();
+
+
+        let count = 0;
+
+
+        cards.forEach(function (card) {
+
+            const category =
+                card.dataset.category || "";
+
+
+            const name =
+                card.dataset.name || "";
+
+
+            const filterMatch =
+                currentFilter === "all" ||
+                category === currentFilter;
+
+
+            const searchMatch =
+                !query ||
+                name.includes(query);
+
+
+            if (
+                filterMatch &&
+                searchMatch
+            ) {
+
+                card.style.display =
+                    "block";
+
+                count++;
+
+            } else {
+
+                card.style.display =
+                    "none";
+
+            }
+
+        });
+
+
+        noGroups.style.display =
+            count === 0
+                ? "block"
+                : "none";
+
+    }
+
+
+    filters.forEach(function (filter) {
+
+        filter.addEventListener(
+            "click",
+            function () {
+
+                filters.forEach(function (item) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+                filter.classList.add(
+                    "active"
+                );
+
+
+                currentFilter =
+                    filter.dataset.filter;
+
+
+                updateGroups();
+
+            }
+        );
+
+    });
+
+
+    search.addEventListener(
+        "input",
+        updateGroups
+    );
+
+
+    function showGroup(name) {
+
+        alert(
+            name +
+            "\n\nGroup details will be connected here later."
+        );
+
+    }
+
+
+    function joinGroup(name) {
+
+        alert(
+            "Joining " +
+            name +
+            " will be connected here later."
+        );
+
+    }
+
+
+    updateGroups();
+
+</script>
+
+
+</body>
+</html>
