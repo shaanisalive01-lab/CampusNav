@@ -193,6 +193,13 @@ const campusGraph = {
        ROOM 105
     ========================================= */
 
+    "block-a-right-entry": {
+
+        "block-a": 35
+
+    },
+
+
     "block-a-left-entry": {
 
         "block-a": 35,

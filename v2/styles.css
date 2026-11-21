@@ -7,7 +7,7 @@
   --border: #dfe2e8;
   --text: #14171f;
   --muted: #5d6573;
-  --faint: #8a92a0;
+  --faint: #667085;
   --road: #cfd4dc;
   --road-line: #ffffff;
   --building: #e4e7ed;
@@ -35,7 +35,7 @@
   --border: #2a2f3c;
   --text: #eceef3;
   --muted: #a0a8b8;
-  --faint: #6f7788;
+  --faint: #8c95a8;
   --road: #2b303c;
   --road-line: #3a4050;
   --building: #1d212b;
@@ -342,3 +342,9 @@ html { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; -w
 }
 .stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 @media (max-width: 760px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+
+.places-list summary { cursor: pointer; font-weight: 600; }
+.places-list ul { list-style: none; margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+.update-bar { position: fixed; left: 50%; bottom: calc(76px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 90; background: var(--text); color: var(--bg); padding: 10px 14px; border-radius: 12px; display: flex; gap: 12px; align-items: center; font-weight: 600; font-size: 14px; }
+.update-bar button { background: var(--accent); color: var(--accent-ink); padding: 6px 12px; border-radius: 8px; font-weight: 700; }
+@media (min-width: 761px) { .update-bar { bottom: 22px; } }

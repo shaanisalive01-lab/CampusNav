@@ -101,12 +101,31 @@
   <div id="toasts" role="status" aria-live="polite"></div>
 
   <script src="campusData.js"></script>
+  <script src="mapdata.js"></script>
+  <script src="routing.js"></script>
   <script src="timetableData.js"></script>
   <script src="app.js"></script>
   <script>
     /* offline support — only on http(s), not file:// */
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
-      addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+      addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").then(function (reg) {
+          function offer(w) {
+            if (!w || !navigator.serviceWorker.controller || document.getElementById("updateBar")) return;
+            var bar = document.createElement("div"); bar.className = "update-bar"; bar.id = "updateBar";
+            bar.innerHTML = "A new version is ready <button type='button'>Reload</button>";
+            bar.querySelector("button").onclick = function () { w.postMessage("skip-waiting"); };
+            document.body.appendChild(bar);
+          }
+          if (reg.waiting) offer(reg.waiting);
+          reg.addEventListener("updatefound", function () {
+            var w = reg.installing; if (!w) return;
+            w.addEventListener("statechange", function () { if (w.state === "installed") offer(w); });
+          });
+        }).catch(function () {});
+        var reloaded = false;
+        navigator.serviceWorker.addEventListener("controllerchange", function () { if (!reloaded) { reloaded = true; location.reload(); } });
+      });
     }
   </script>
 </body>

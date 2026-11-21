@@ -4,7 +4,7 @@ Self-contained, gradient-free, mobile-first web app (no build step). Everything 
 
 ## Run it
 - Double-click `index.html`, or from the repo root: `python3 -m http.server 8000` → http://localhost:8000/v2/
-- Demo any time of the week: `index.html?now=Mon@09:40`
+- Demo any time of the week: `index.html?demo=1&now=Mon@09:40` (the demo clock is opt-in)
 
 ## Demo script (≈3 minutes)
 1. **Student:** Home shows the live countdown + "leave by" time → Navigate → animated route, stairs, step-free toggle.
@@ -36,3 +36,14 @@ Not yet built or tested here — it needs Android Studio / Xcode on your machine
 
 ## Duplicated data
 `campusData.js` and `timetableData.js` are copies of the repo-root files so `v2/` can be packaged on its own. Keep them in sync (or delete the old pages once v2 replaces them).
+
+## Where things live
+- `mapdata.js` — buildings, floors, label tweaks, walk speed. **Edit this to change the map**, not `app.js`.
+- `routing.js` — pure routing + directions (no DOM). `campusData.js` — places and graph. `app.js` — screens.
+- Walk times use `metresPerUnit` in `mapdata.js` (currently 1, unmeasured). Measure one real distance and set it.
+
+## Tests
+```bash
+node --test v2/test/routing.test.js
+```
+Covers routing, step-free, stairs, directions, data integrity (missing nodes, unreachable rooms, room double-bookings) and that the `v2/` data copies match the repo-root originals.

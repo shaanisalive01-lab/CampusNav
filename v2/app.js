@@ -42,7 +42,8 @@
   const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   let clockOffset = 0;
   (() => {
-    const m = /^(\w{3})\w*@(\d{1,2}):(\d{2})$/.exec(new URLSearchParams(location.search).get("now") || "");
+    const q = new URLSearchParams(location.search);   // demo time is opt-in: ?demo=1&now=Mon@09:40
+    const m = q.get("demo") ? /^(\w{3})\w*@(\d{1,2}):(\d{2})$/.exec(q.get("now") || "") : null;
     if (!m) return;
     const di = DAYS.findIndex(d => d.toLowerCase().startsWith(m[1].toLowerCase()));
     if (di < 0) return;
@@ -60,97 +61,18 @@
     return d ? `${d}d ${h}h ${p(m)}m` : h ? `${h}:${p(m)}:${p(sec)}` : `${p(m)}:${p(sec)}`;
   }
 
-  /* ================= campus graph & routing ================= */
-  const LEVEL1 = new Set(["first-floor-stairs", "first-floor-corridor", "first-floor-left-corridor", "first-floor-right-corridor", "a201", "a204"]);
-  const floorOf = id => LEVEL1.has(id) ? 1 : 0;
-  const ROAD = new Set(["main-gate", "main-road-bottom", "block-a", "left-road-junction", "left-road-mid", "library-entrance", "library", "right-road-junction", "right-road-mid", "cafeteria-entrance", "cafeteria"]);
-  const LABELS = {
-    "main-road-bottom": "the main road", "left-road-junction": "the left junction", "left-road-mid": "the left road",
-    "library-entrance": "the Library entrance", "right-road-junction": "the right junction", "right-road-mid": "the right road",
-    "cafeteria-entrance": "the Cafeteria entrance", "block-a-left-entry": "the west door", "block-a-right-entry": "the east door",
-    "first-floor-stairs": "Level 1 landing", "first-floor-corridor": "the Level 1 corridor",
-    "first-floor-left-corridor": "the west corridor", "first-floor-right-corridor": "the east corridor"
-  };
-  const LABEL_POS = { "block-a": [14, 4, "start"], "stairs-a": [-14, 4, "end"], "first-floor-stairs": [14, 4, "start"], "a201": [0, 22, "middle"] };
-  const label = id => campusLocations[id]?.name || LABELS[id] || id;
+  /* ================= campus graph & routing (see routing.js, mapdata.js) ================= */
+  const MAP = campusMapConfig;
+  const levelOf = id => MAP.nodeLevel[id] ?? 0;
+  const levelName = l => MAP.levels.find(x => x.id === l)?.name ?? `Level ${l}`;
+  const ROAD = new Set(MAP.roadNodes);
+  const label = id => campusLocations[id]?.name || MAP.nodeLabels[id] || id;
   const isNamed = id => !!campusLocations[id] && id !== "first-floor";
-
-  /* Build an undirected adjacency map. The source data has a Library<->Cafeteria edge
-     that has no road on the map, so it is dropped (it let routes teleport across campus). */
-  const adj = {};
-  const addEdge = (a, b, w) => { (adj[a] ||= {})[b] = Math.min(w, adj[a]?.[b] ?? Infinity); };
-  for (const [a, nb] of Object.entries(campusGraph)) for (const [b, w] of Object.entries(nb)) {
-    if ((a === "library" && b === "cafeteria") || (a === "cafeteria" && b === "library")) continue;
-    addEdge(a, b, w); addEdge(b, a, w);
-  }
-  const isStairEdge = (a, b) => floorOf(a) !== floorOf(b);
-  const STAIR_PENALTY = 20;        // seconds
-  const WALK_SPEED = 1.3;          // metres per second
-
-  class MinHeap {
-    constructor() { this.a = []; }
-    push(k, v) { const a = this.a; a.push([k, v]); let i = a.length - 1; while (i) { const p = (i - 1) >> 1; if (a[p][0] <= a[i][0]) break; [a[p], a[i]] = [a[i], a[p]]; i = p; } }
-    pop() { const a = this.a, top = a[0], last = a.pop(); if (a.length) { a[0] = last; let i = 0; for (;;) { let l = 2 * i + 1, r = l + 1, m = i; if (l < a.length && a[l][0] < a[m][0]) m = l; if (r < a.length && a[r][0] < a[m][0]) m = r; if (m === i) break; [a[m], a[i]] = [a[i], a[m]]; i = m; } } return top; }
-    get size() { return this.a.length; }
-  }
-
-  function route(from, to, { stepFree = false } = {}) {
-    if (!adj[from] || !adj[to]) return null;
-    const cost = (a, b) => adj[a][b] + (isStairEdge(a, b) ? STAIR_PENALTY * WALK_SPEED : 0);
-    const dist = { [from]: 0 }, prev = {}, heap = new MinHeap(); heap.push(0, from);
-    while (heap.size) {
-      const [d, u] = heap.pop();
-      if (d > dist[u]) continue;
-      if (u === to) break;
-      for (const v in adj[u]) {
-        if (stepFree && isStairEdge(u, v)) continue;
-        const nd = d + cost(u, v);
-        if (nd < (dist[v] ?? Infinity)) { dist[v] = nd; prev[v] = u; heap.push(nd, v); }
-      }
-    }
-    if (!(to in dist)) return null;
-    const path = [to]; while (path[0] !== from) path.unshift(prev[path[0]]);
-    let metres = 0, levels = 0;
-    for (let i = 1; i < path.length; i++) { metres += adj[path[i - 1]][path[i]]; if (isStairEdge(path[i - 1], path[i])) levels++; }
-    return { path, metres, levels, seconds: metres / WALK_SPEED + levels * STAIR_PENALTY };
-  }
-  const walkSeconds = (a, b) => route(a, b)?.seconds ?? 0;
-
-  function buildSteps(path) {
-    const P = id => mapCoordinates[id];
-    const hd = (a, b) => Math.atan2(P(b).y - P(a).y, P(b).x - P(a).x);
-    const dirName = r => ["east", "south-east", "south", "south-west", "west", "north-west", "north", "north-east"][Math.round(((r * 180 / Math.PI) + 360) % 360 / 45) % 8];
-    const steps = []; let start = 0, acc = 0, prevHeading = null;
-    for (let i = 1; i < path.length; i++) {
-      acc += adj[path[i - 1]][path[i]];
-      const last = i === path.length - 1;
-      const floorChange = floorOf(path[i - 1]) !== floorOf(path[i]);
-      const nextFloorChange = !last && floorOf(path[i]) !== floorOf(path[i + 1]);
-      const turn = !last && Math.abs(norm(hd(path[i], path[i + 1]) - hd(path[i - 1], path[i]))) > 0.5;
-      if (!(last || isNamed(path[i]) || floorChange || nextFloorChange || turn)) continue;
-      const a = path[start], b = path[i];
-      if (floorChange) {
-        const up = floorOf(b) > floorOf(a);
-        steps.push({ kind: "stairs", text: `Take the stairs ${up ? "up to Level 1" : "down to Ground"}`, sub: `${label(a)} → ${label(b)}`, m: acc, from: start, to: i });
-      } else {
-        const h = hd(path[start], path[start + 1]);
-        let kind = "up", text;
-        if (prevHeading === null) text = `Head ${dirName(h)} toward ${label(b)}`;
-        else {
-          const d = norm(h - prevHeading);
-          if (Math.abs(d) < 0.4) text = `Continue toward ${label(b)}`;
-          else if (Math.abs(d) > 2.5) { kind = "left"; text = `Turn around toward ${label(b)}`; }
-          else { kind = d > 0 ? "right" : "left"; text = `${Math.abs(d) < 0.9 ? "Bear" : "Turn"} ${kind} toward ${label(b)}`; }
-        }
-        if (last) kind = kind === "up" ? "flag" : kind;
-        steps.push({ kind, text: last ? text.replace(/ toward .*/, ` — arrive at ${label(b)}`) : text, sub: last ? "Destination" : "", m: acc, from: start, to: i });
-        prevHeading = hd(path[i - 1], path[i]);
-      }
-      start = i; acc = 0;
-    }
-    return steps;
-    function norm(a) { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; }
-  }
+  const { adj, route, walkSeconds, buildSteps, isStairEdge } = CampusRouting.createRouter({
+    graph: campusGraph, coords: mapCoordinates, levelOf, label, isNamed, levelName,
+    ignoredEdges: MAP.ignoredEdges, metresPerUnit: MAP.metresPerUnit, walkSpeed: MAP.walkSpeed, stairPenaltySeconds: MAP.stairPenaltySeconds
+  });
+  const floorOf = levelOf;
 
   /* ================= domain data ================= */
   const EVENTS = [
@@ -316,7 +238,7 @@
     const resolve = q => { if (!q) return ""; if (adj[q]) return q; const l = q.toLowerCase(); return nodes.find(id => label(id).toLowerCase() === l) || nodes.find(id => label(id).toLowerCase().includes(l)) || ""; };
     if (urlFrom) mapState.from = resolve(urlFrom) || mapState.from;
     if (urlTo) { mapState.to = resolve(urlTo); if (!mapState.to) toast(`Couldn't find “${urlTo}”`); }
-    const opts = sel => nodes.map(id => `<option value="${id}" ${id === sel ? "selected" : ""}>${esc(label(id))}${floorOf(id) ? " · Level 1" : ""}</option>`).join("");
+    const opts = sel => nodes.map(id => `<option value="${id}" ${id === sel ? "selected" : ""}>${esc(label(id))}${floorOf(id) ? " · " + esc(levelName(floorOf(id))) : ""}</option>`).join("");
 
     view.innerHTML = `<div class="map-layout">
       <div class="panel">
@@ -328,44 +250,34 @@
           <button class="icon-btn" id="btnSwap" aria-label="Swap start and destination" title="Swap">${icon("swap")}</button></div>
           <label class="switch" style="margin-top:14px"><input type="checkbox" id="chkFree" ${mapState.stepFree ? "checked" : ""}>Step-free route (avoid stairs)</label></div>
         <div id="routeOut"></div>
+        <details class="card places-list"><summary>All places (list view)</summary><ul>${nodes.map(id => `<li><button class="btn sm ghost" data-pick="${id}">${esc(label(id))}${floorOf(id) ? " · " + esc(levelName(floorOf(id))) : ""}</button></li>`).join("")}</ul></details>
       </div>
       <div class="map-wrap" id="mapWrap">
-        <svg class="map" id="svgMap" viewBox="0 0 800 520" role="img" aria-label="Campus map. Use the controls to zoom and pan."></svg>
-        <div class="map-ctl tl"><div class="seg-control" role="group" aria-label="Floor"><button data-floor="0" aria-pressed="true">Ground</button><button data-floor="1" aria-pressed="false">Level 1</button></div></div>
+        <svg class="map" id="svgMap" viewBox="0 0 ${MAP.viewBox.w} ${MAP.viewBox.h}" role="img" aria-label="Campus map. Use the controls to zoom and pan."></svg>
+        <div class="map-ctl tl"><div class="seg-control" role="group" aria-label="Floor">${MAP.levels.map(l => `<button data-floor="${l.id}" aria-pressed="${l.id === 0}">${esc(l.name)}</button>`).join("")}</div></div>
         <div class="map-ctl tr"><button class="icon-btn" id="zIn" aria-label="Zoom in">${icon("plus")}</button><button class="icon-btn" id="zOut" aria-label="Zoom out">${icon("minus")}</button><button class="icon-btn" id="zFit" aria-label="Fit route">${icon("fit")}</button></div>
         <div class="map-ctl bl"><div class="legend"><span><i style="background:var(--good)"></i>Start</span><span><i style="background:var(--accent)"></i>Destination</span><span><i style="background:var(--road)"></i>Road</span></div></div>
       </div></div>`;
 
     const svg = $("#svgMap"), wrap = $("#mapWrap"), P = id => mapCoordinates[id];
     const line = (a, b, cls) => `<line class="${cls}" x1="${P(a).x}" y1="${P(a).y}" x2="${P(b).x}" y2="${P(b).y}"/>`;
-    let roads = "", mids = "", halls0 = "", halls1 = "", seen = new Set();
+    let roads = "", mids = "", seen = new Set(), stairLinks = "";
+    const halls = {};
     for (const a in adj) for (const b in adj[a]) {
       const k = [a, b].sort().join("|"); if (seen.has(k) || !P(a) || !P(b)) continue; seen.add(k);
-      if (isStairEdge(a, b)) continue;
+      if (isStairEdge(a, b)) { stairLinks += `<line x1="${P(a).x}" y1="${P(a).y}" x2="${P(b).x}" y2="${P(b).y}" stroke="var(--faint)" stroke-width="3" stroke-dasharray="3 5" stroke-linecap="round"/>`; continue; }
       if (ROAD.has(a) && ROAD.has(b)) { roads += line(a, b, "road"); mids += line(a, b, "road-mid"); }
-      else if (floorOf(a)) halls1 += line(a, b, "road-hall"); else halls0 += line(a, b, "road-hall");
+      else halls[floorOf(a)] = (halls[floorOf(a)] || "") + line(a, b, "road-hall");
     }
     const pins = ids => ids.filter(id => P(id) && isNamed(id)).map(id => {
-      const p = P(id), [dx, dy, anchor] = LABEL_POS[id] || [0, 22, "middle"];
+      const p = P(id), [dx, dy, anchor] = MAP.labelOffsets[id] || [0, 22, "middle"];
       return `<g class="pin" data-id="${id}" tabindex="0" role="button" aria-label="${esc(label(id))}"><circle cx="${p.x}" cy="${p.y}" r="6.5"/><text class="node-label" x="${p.x + dx}" y="${p.y + dy}" text-anchor="${anchor}">${esc(label(id))}</text></g>`;
     }).join("");
-    const ground = Object.keys(adj).filter(id => !floorOf(id)), level1 = Object.keys(adj).filter(id => floorOf(id));
+    const bldg = l => MAP.buildings.filter(b => b.level === l).map(b => `<rect class="bldg" x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" rx="12"/><text class="bldg-label" x="${b.x + 14}" y="${b.y + 18}">${esc(b.name)}</text>`).join("");
+    const layers = MAP.levels.map(l => `<g class="floor-layer" id="layer${l.id}">${bldg(l.id)}${l.id === 0 ? roads + mids : ""}${halls[l.id] || ""}${pins(Object.keys(adj).filter(id => floorOf(id) === l.id))}</g>`).join("");
     svg.innerHTML = `<defs><pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="var(--building-edge)" opacity=".5"/></pattern></defs>
       <rect x="-2000" y="-2000" width="5000" height="5000" fill="url(#dots)"/>
-      <g id="vp">
-        <g class="floor-layer" id="layer0">
-          <rect class="bldg" x="236" y="316" width="328" height="70" rx="12"/><text class="bldg-label" x="250" y="334">Block A · Ground</text>
-          <rect class="bldg" x="84" y="210" width="92" height="66" rx="12"/><text class="bldg-label" x="96" y="228">Library</text>
-          <rect class="bldg" x="624" y="210" width="92" height="66" rx="12"/><text class="bldg-label" x="636" y="228">Cafeteria</text>
-          ${roads}${mids}${halls0}${pins(ground)}
-        </g>
-        <g class="floor-layer" id="layer1">
-          <rect class="bldg" x="296" y="192" width="208" height="102" rx="12"/><text class="bldg-label" x="310" y="210">Block A · Level 1</text>
-          ${halls1}${pins(level1)}
-        </g>
-        <g id="stairsLink"><line x1="${P("stairs-a").x}" y1="${P("stairs-a").y}" x2="${P("first-floor-stairs").x}" y2="${P("first-floor-stairs").y}" stroke="var(--faint)" stroke-width="3" stroke-dasharray="3 5" stroke-linecap="round"/></g>
-        <g id="routeLayer"></g><g id="walkerLayer"></g>
-      </g>`;
+      <g id="vp">${layers}<g id="stairsLink">${stairLinks}</g><g id="routeLayer"></g><g id="walkerLayer"></g></g>`;
     /* hall style: add into CSS via inline attribute-free class */
     const style = document.createElementNS("http://www.w3.org/2000/svg", "style");
     style.textContent = `.road-hall{stroke:var(--building-edge);stroke-width:7;stroke-linecap:round}`;
@@ -385,8 +297,8 @@
     function frame(ids, pad = 90) {
       const pts = ids.map(P).filter(Boolean); if (!pts.length) return { k: 1, x: 0, y: 0 };
       const xs = pts.map(p => p.x), ys = pts.map(p => p.y), w = Math.max(...xs) - Math.min(...xs) + pad * 2, h = Math.max(...ys) - Math.min(...ys) + pad * 2;
-      const k = clamp(Math.min(800 / w, 520 / h), 1, 2.6), cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2;
-      return { k, x: 400 - k * cx, y: 260 - k * cy };
+      const k = clamp(Math.min(MAP.viewBox.w / w, MAP.viewBox.h / h), 1, 2.6), cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2;
+      return { k, x: MAP.viewBox.w / 2 - k * cx, y: MAP.viewBox.h / 2 - k * cy };
     }
     const pointers = new Map(); let moved = false, pinch = 0;
     wrap.addEventListener("pointerdown", e => { if (e.target.closest("button, .map-ctl")) return; pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = false; cancelAnimationFrame(anim); pinch = 0; });
@@ -405,14 +317,14 @@
     wrap.addEventListener("click", e => { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
     wrap.addEventListener("wheel", e => { e.preventDefault(); const u = toUser(e.clientX, e.clientY); zoomAt(u.x, u.y, Math.exp(-e.deltaY * 0.0015)); }, { passive: false });
     wrap.addEventListener("dblclick", e => { const u = toUser(e.clientX, e.clientY); zoomAt(u.x, u.y, 1.6); });
-    $("#zIn").onclick = () => zoomAt(400, 260, 1.3);
-    $("#zOut").onclick = () => zoomAt(400, 260, 1 / 1.3);
+    $("#zIn").onclick = () => zoomAt(MAP.viewBox.w / 2, MAP.viewBox.h / 2, 1.3);
+    $("#zOut").onclick = () => zoomAt(MAP.viewBox.w / 2, MAP.viewBox.h / 2, 1 / 1.3);
     $("#zFit").onclick = () => flyTo(result ? frame(result.path) : { k: 1, x: 0, y: 0 });
 
     /* ---- floors ---- */
     function setFloor(f, quiet) {
       mapState.floor = f;
-      $("#layer0").classList.toggle("dim", f === 1); $("#layer1").classList.toggle("dim", f === 0);
+      MAP.levels.forEach(l => $("#layer" + l.id).classList.toggle("dim", l.id !== f));
       $$("[data-floor]", wrap).forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.floor === f)));
       if (!quiet) drawRoute();
     }
@@ -443,7 +355,7 @@
       if (from === to) { out.innerHTML = `<div class="card empty"><b>You're already here.</b><p>Start and destination are the same place.</p></div>`; drawRoute(); return; }
       result = route(from, to, { stepFree: mapState.stepFree });
       if (!result) {
-        out.innerHTML = `<div class="card"><span class="chip warn">No route</span><p style="margin-top:10px">${mapState.stepFree && route(from, to) ? "There's no step-free way to reach this place — Level 1 is only reachable by stairs. Turn off “Step-free” to see the stairs route." : "These two places aren't connected yet."}</p></div>`;
+        out.innerHTML = `<div class="card"><span class="chip warn">No route</span><p style="margin-top:10px">${mapState.stepFree && route(from, to) ? "There's no step-free way to reach this place — Some floors are only reachable by stairs. Turn off “Step-free” to see the stairs route." : "These two places aren't connected yet."}</p></div>`;
         drawRoute(); return;
       }
       steps = buildSteps(result.path);
@@ -465,6 +377,7 @@
     $("#selTo").onchange = e => { mapState.to = e.target.value; updateRoute(); };
     $("#chkFree").onchange = e => { mapState.stepFree = e.target.checked; updateRoute(); };
     $("#btnSwap").onclick = () => { if (!mapState.to) return; [mapState.from, mapState.to] = [mapState.to, mapState.from]; sync(); updateRoute(); };
+    $(".places-list").addEventListener("click", e => { const b = e.target.closest("[data-pick]"); if (!b) return; mapState.to = b.dataset.pick; sync(); updateRoute(); });
     svg.addEventListener("click", e => { const p = e.target.closest(".pin"); if (!p) return; mapState[e.shiftKey ? "from" : "to"] = p.dataset.id; sync(); updateRoute(); });
     svg.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { const p = e.target.closest(".pin"); if (p) { e.preventDefault(); p.dispatchEvent(new MouseEvent("click", { bubbles: true, shiftKey: e.shiftKey })); } } });
     $("#routeOut").addEventListener("click", e => {
@@ -537,7 +450,7 @@
       view, cats: ["Technical", "Social", "Academic", "Club"], placeholder: "Search events…",
       items: () => allEvents().map(e => ({ ...e, when: eventDate(e) })).sort((a, b) => a.when - b.when),
       searchKey: e => `${e.title} ${e.cat} ${label(e.loc)}`,
-      card: e => `<article class="card item"><div class="row"><span class="chip accent">${e.cat}</span><span class="chip ${rsvps.has(e.id) ? "good" : ""}">${rsvps.has(e.id) ? "Going" : relDay(e.when)}</span></div>
+      card: e => `<article class="card item"><div class="row"><span class="chip accent">${e.cat}</span><span class="chip ${rsvps.has(e.id) ? "good" : ""}">${rsvps.has(e.id) ? "Going" : e.date ? relDay(e.when) : "Weekly · " + relDay(e.when)}</span></div>
         <h3>${esc(e.title)}</h3><p>${esc(e.about)}</p>
         <div class="meta"><span>${icon("clock")}${relDay(e.when)}, ${fmtDate(e.when)} – ${fmtMin(toMin(e.end))}</span><span>${icon("pin")}${esc(label(e.loc))}</span></div>
         <div class="actions"><button class="btn sm ${rsvps.has(e.id) ? "" : "primary"}" data-rsvp="${e.id}">${rsvps.has(e.id) ? "Cancel RSVP" : "I'm going"}</button><button class="btn sm" data-go="map:to=${esc(e.loc)}">${icon("pin")}Navigate</button><button class="btn sm ghost" data-ics="${e.id}" aria-label="Add to calendar">${icon("download")}.ics</button></div></article>`
@@ -745,7 +658,7 @@
     const list = [];
     viewsFor().forEach(v => list.push({ g: "Go to", t: v[1], ic: v[2], run: () => go(v[0]) }));
     list.push({ g: "Actions", t: "Toggle dark mode", ic: "moon", run: () => $("#themeBtn").click() }, { g: "Actions", t: "Open settings", ic: "gear", run: openSettings });
-    Object.keys(adj).filter(isNamed).forEach(id => list.push({ g: "Places", t: label(id), s: floorOf(id) ? "Level 1" : (campusLocations[id].type || ""), ic: "pin", run: () => go("map", { to: id }) }));
+    Object.keys(adj).filter(isNamed).forEach(id => list.push({ g: "Places", t: label(id), s: floorOf(id) ? levelName(floorOf(id)) : (campusLocations[id].type || ""), ic: "pin", run: () => go("map", { to: id }) }));
     timetable.forEach(c => list.push({ g: "Classes", t: c.subject, s: `${c.day.slice(0, 3)} ${fmtMin(toMin(c.startTime))}`, ic: "cal", run: () => go("map", { to: c.location }) }));
     allEvents().forEach(ev => list.push({ g: "Events", t: ev.title, s: ev.cat, ic: "ticket", run: () => go("events") }));
     CLUBS.forEach(c => list.push({ g: "Clubs", t: c.name, s: c.tag, ic: "users", run: () => go("clubs") }));
