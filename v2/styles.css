@@ -307,3 +307,38 @@ dialog[open] { animation: pop .18s var(--ease); }
 }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 :root[data-motion="off"] * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+
+/* ---------- Roles, notifications, native-app feel ---------- */
+html { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; -webkit-text-size-adjust: 100%; }
+.topbar { padding-top: env(safe-area-inset-top); height: calc(64px + env(safe-area-inset-top)); }
+.icon-btn { position: relative; }
+.badge { position: absolute; top: -5px; right: -5px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 999px; background: var(--bad); color: #fff; font: 700 11px/19px Inter, system-ui, sans-serif; text-align: center; border: 2px solid var(--bg); }
+.role-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 700; font-size: 12px; white-space: nowrap; }
+.form { display: grid; gap: 14px; }
+.form .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field input[type=time], .field input[type=date], .field textarea { height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); width: 100%; }
+.field textarea { height: 96px; padding: 10px 12px; resize: vertical; font: inherit; }
+.manage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.diff { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+.diff s { color: var(--faint); }
+.notif { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.notif.unread { background: var(--accent-soft); }
+.notif .step-ico { background: var(--surface); }
+.notif small { color: var(--muted); }
+.notif-list { display: flex; flex-direction: column; gap: 8px; max-height: 55vh; overflow-y: auto; }
+.install { background: var(--accent-soft); border-radius: 12px; padding: 14px; font-size: 14px; display: flex; flex-direction: column; gap: 10px; }
+.role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.role-grid button { text-align: left; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.role-grid button b { display: block; }
+.role-grid button small { color: var(--muted); }
+.role-grid button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+@media (max-width: 1000px) { .manage { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .topbar { height: calc(58px + env(safe-area-inset-top)); }
+  .field input, .field select, .field textarea, .pal-input input { font-size: 16px; } /* stops iOS zooming into inputs */
+  .btn, .icon-btn, .nav-btn { min-height: 44px; }
+  .form .two, .role-grid { grid-template-columns: 1fr; }
+  .role-chip { display: none; }
+}
+.stats-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) { .stats-grid { grid-template-columns: 1fr 1fr; } }

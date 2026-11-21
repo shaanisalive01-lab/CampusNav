@@ -1,0 +1,6 @@
+{
+  "appId": "edu.campusnav.app",
+  "appName": "CampusNav",
+  "webDir": "v2",
+  "server": { "androidScheme": "https" }
+}
