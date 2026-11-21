@@ -600,6 +600,14 @@ function findShortestPath(
     target
 ) {
 
+    if (
+        !graph[start] ||
+        !graph[target]
+    ) {
+        return null;
+    }
+
+
     const distances = {};
 
     const previous = {};
@@ -1329,6 +1337,17 @@ function findLocation(
         entries.find(
             ([, location]) =>
                 location.name &&
+                normalized.length > 1 &&
+                location.name
+                    .toLowerCase()
+                    .startsWith(
+                        normalized
+                    )
+        ) ||
+        entries.find(
+            ([, location]) =>
+                location.name &&
+                normalized.length > 1 &&
                 location.name
                     .toLowerCase()
                     .includes(
@@ -1847,9 +1866,24 @@ function loadDestinationFromURL() {
     }
 
 
-    navigateToLocation(
-        destination
-    );
+    const resolved =
+        campusLocations[destination]
+            ? destination
+            : findLocation(destination);
+
+
+    if (resolved) {
+
+        if (input) {
+            input.value =
+                campusLocations[resolved].name;
+        }
+
+        navigateToLocation(
+            resolved
+        );
+
+    }
 
 }
 
@@ -2243,4 +2277,4 @@ document.addEventListener(
         loadDestinationFromURL();
 
     }
-);
+);

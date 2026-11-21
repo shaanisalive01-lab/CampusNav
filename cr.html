@@ -1162,11 +1162,7 @@
             }
 
 
-            return campusLocations.find(
-                location =>
-                    location.id ===
-                    locationId
-            );
+            return campusLocations[locationId] || null;
         }
 
 
@@ -1643,4 +1639,4 @@
 
 </body>
 
-</html>
+</html>

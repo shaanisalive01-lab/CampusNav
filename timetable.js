@@ -7,15 +7,28 @@
 // LOCATION
 // ==========================================
 
+function escapeHTML(value) {
+
+    return String(value ?? "").replace(
+        /[&<>"']/g,
+        char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[char])
+    );
+}
+
+
 function getLocation(locationId) {
 
     if (typeof campusLocations === "undefined") {
         return null;
     }
 
-    return campusLocations.find(
-        location => location.id === locationId
-    );
+    return campusLocations[locationId] || null;
 }
 
 
@@ -120,7 +133,8 @@ function getNextClassAcrossWeek() {
     ];
 
 
-    for (let offset = 0; offset < 7; offset++) {
+    // offset 7 = today again, next week
+    for (let offset = 0; offset <= 7; offset++) {
 
         const dayIndex =
             (currentDayIndex + offset) % 7;
@@ -293,7 +307,7 @@ function displayNextClass() {
             </span>
 
             <h3>
-                ${classItem.subject}
+                ${escapeHTML(classItem.subject)}
             </h3>
 
             <p>
@@ -420,7 +434,7 @@ function displayTimetable() {
                 <div class="class-info">
 
                     <h3>
-                        ${classItem.subject}
+                        ${escapeHTML(classItem.subject)}
                     </h3>
 
                     <p>
@@ -485,4 +499,4 @@ document.addEventListener(
         startTimetableRefresh();
 
     }
-);
+);
