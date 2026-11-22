@@ -1208,7 +1208,7 @@ function showRouteInfo(
                     </span>
 
                     <h3>
-                        ${destinationName}
+                        ${escapeHTML(destinationName)}
                     </h3>
 
                     <p>
@@ -1244,11 +1244,11 @@ function showRouteInfo(
                                 <div class="route-step">
 
                                     <span class="route-step-icon">
-                                        ${step.icon}
+                                        ${escapeHTML(step.icon)}
                                     </span>
 
                                     <span>
-                                        ${step.text}
+                                        ${escapeHTML(step.text)}
                                     </span>
 
                                 </div>
@@ -1835,9 +1835,13 @@ function loadDestinationFromURL() {
 
 
     const destination =
-        params.get(
-            "destination"
-        );
+        (
+            params.get(
+                "destination"
+            ) || ""
+        )
+            .trim()
+            .slice(0, 64);
 
 
     if (!destination) {
@@ -1853,26 +1857,21 @@ function loadDestinationFromURL() {
 
     if (input) {
 
-        const location =
-            campusLocations[
-                destination
-            ];
-
-
         input.value =
-            location?.name ||
-            destination;
+            isLocationId(destination)
+                ? campusLocations[destination].name
+                : destination;
 
     }
 
 
     const resolved =
-        campusLocations[destination]
+        isLocationId(destination)
             ? destination
             : findLocation(destination);
 
 
-    if (resolved) {
+    if (isLocationId(resolved)) {
 
         if (input) {
             input.value =

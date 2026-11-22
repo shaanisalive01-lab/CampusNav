@@ -484,7 +484,7 @@
       const nowline = d === today && nm >= H0 * 60 && nm < H1 * 60 ? `<div class="nowline" style="top:${nm - H0 * 60}px"></div>` : "";
       return `<div class="col ${d === today ? "today" : ""}" style="height:${(H1 - H0) * 60}px">${lines}${items}${nowline}</div>`;
     }).join("");
-    view.innerHTML = `<div class="row wrap" style="margin-bottom:16px;justify-content:space-between"><p class="muted">Tap any class to navigate to its room. Class reps' edits from the CR page are applied automatically.</p><a class="btn sm" href="../cr.html">Open CR editor</a></div>
+    view.innerHTML = `<div class="row wrap" style="margin-bottom:16px;justify-content:space-between"><p class="muted">Tap any class to navigate to its room. Class rep edits made on the CR page in this browser show up here after a reload (local demo only).</p><a class="btn sm" href="../cr.html">Open CR editor</a></div>
       <div class="week"><div class="head"></div>${week.map(d => `<div class="head ${d === today ? "today" : ""}">${d.slice(0, 3)}<small>${timetable.filter(c => c.day === d).length} classes</small></div>`).join("")}
       <div class="hours">${Array.from({ length: H1 - H0 }, (_, i) => `<div class="mono">${fmtMin((H0 + i) * 60).replace(":00", "")}</div>`).join("")}</div>${cols}</div>`;
     const id = setInterval(() => { if (now().getSeconds() === 0) render(); }, 1000);

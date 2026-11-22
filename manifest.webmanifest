@@ -1,0 +1,14 @@
+{
+  "name": "CampusNav",
+  "short_name": "CampusNav",
+  "description": "Find your way around campus, see your classes and what is on.",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080b12",
+  "theme_color": "#080b12",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

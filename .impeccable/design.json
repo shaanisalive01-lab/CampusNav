@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T13:00:00.000Z",
+  "title": "Design System: CampusNav",
+  "extensions": {
+    "colorMeta": {
+      "blue": { "role": "primary", "displayName": "CampusNav Blue", "canonical": "#4f8cff" },
+      "navy-black": { "role": "neutral", "displayName": "Navy Black", "canonical": "#080b12" },
+      "navy-surface": { "role": "neutral", "displayName": "Navy Surface", "canonical": "#111824" },
+      "snow": { "role": "neutral", "displayName": "Snow", "canonical": "#f3f6fb" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Page title", "purpose": "The greeting and screen titles." },
+      "title": { "displayName": "Row and section title", "purpose": "Class names, section headings." },
+      "room": { "displayName": "Room number", "purpose": "The one big number on a card or row." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Press feedback and the lit-row reveal." },
+      { "name": "route-flow", "value": "1.4s linear infinite dash offset", "purpose": "The route line on the mini map; off under reduced motion." },
+      { "name": "countdown", "value": "1s tick", "purpose": "The up-next pill and class progress bar." }
+    ],
+    "breakpoints": [
+      { "name": "desktop", "value": "860px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Go and Navigate actions.",
+      "html": "<button class=\"ds-btn\">Navigate</button>",
+      "css": ".ds-btn{background:#4f8cff;color:#06101f;min-height:48px;padding:0 24px;border:0;border-radius:8px;font:600 1rem Barlow,system-ui,sans-serif}.ds-btn:active{transform:scale(.97)}.ds-btn:focus-visible{outline:3px solid #6ea1ff;outline-offset:2px}"
+    },
+    {
+      "name": "Lit Board Row",
+      "kind": "custom",
+      "refersTo": "board-row-lit",
+      "description": "The next class, with its room number large on the right.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-t\">10:00</span><span class=\"ds-n\">Engineering Mathematics</span><span class=\"ds-r\">A204</span></div>",
+      "css": ".ds-row{display:flex;align-items:center;gap:12px;background:#4f8cff;color:#06101f;border-radius:8px;padding:14px 12px;font-family:Barlow,system-ui,sans-serif}.ds-t{font-weight:600}.ds-n{flex:1;font-weight:600;font-size:1.1rem}.ds-r{font-weight:700;font-size:1.6rem}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Next Step",
+    "overview": "A calm navy and blue campus app that answers one question: where do I need to be, and how do I get there.",
+    "keyCharacteristics": ["One lit row", "Live up-next card with a route map", "Navy and daylight themes", "Standard controls"],
+    "rules": [
+      { "name": "Blue means next or tappable", "body": "The accent marks the next class, the route and the actions.", "section": "colors" }
+    ],
+    "dos": ["Do keep tap targets at 44px or more", "Do follow the phone's light or dark setting by default"],
+    "donts": ["Don't use emoji as icons", "Don't add an eyebrow above a heading"]
+  }
+}

@@ -307,3 +307,14 @@ dialog[open] { animation: pop .18s var(--ease); }
 }
 @media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 :root[data-motion="off"] * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+
+/* ---------- Embed mode (inside the main CampusNav site) ---------- */
+:root[data-embed] .rail,
+:root[data-embed] .topbar,
+:root[data-embed] .tabbar { display: none !important; }
+:root[data-embed] .app { display: block; min-height: 0; }
+:root[data-embed] #view { padding: 12px; max-width: none; animation: none; }
+:root[data-embed] .map-layout { height: calc(100vh - 24px); min-height: 520px; }
+@media (max-width: 1000px) {
+  :root[data-embed] .map-layout { height: auto; min-height: 0; }
+}

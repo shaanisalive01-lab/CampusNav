@@ -15,8 +15,25 @@
       if (p.accent) document.documentElement.dataset.accent = p.accent;
       if (p.motion === "off") document.documentElement.dataset.motion = "off";
     } catch (e) {}
+
+    /* embed mode: the main CampusNav site shows this map inside its own
+       header and tab bar, so v2's own chrome is hidden and the theme comes
+       from the parent page (?embed=1&theme=dark|light, then postMessage). */
+    try {
+      var q = new URLSearchParams(location.search);
+      if (q.get("embed")) {
+        document.documentElement.dataset.embed = "1";
+        var t0 = q.get("theme");
+        if (t0 === "dark" || t0 === "light") document.documentElement.dataset.theme = t0;
+      }
+      window.addEventListener("message", function (e) {
+        if (e.origin === location.origin && e.data && (e.data.theme === "dark" || e.data.theme === "light")) {
+          document.documentElement.dataset.theme = e.data.theme;
+        }
+      });
+    } catch (e) {}
   </script>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=embed1">
 </head>
 <body>
   <!-- icon sprite -->
@@ -86,6 +103,7 @@
   <dialog id="settings" aria-label="Settings"><div class="settings" id="settingsBody"></div></dialog>
   <div id="toasts" role="status" aria-live="polite"></div>
 
+  <script src="../utils.js"></script>
   <script src="../campusData.js"></script>
   <script src="../timetableData.js"></script>
   <script src="app.js"></script>

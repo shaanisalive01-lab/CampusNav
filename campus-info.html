@@ -1,563 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-default="system">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>CampusNav | Campus info</title>
+    <meta name="description" content="Facilities, departments, amenities, notices and emergency information for campus life.">
 
-    <title>Campus Info | CampusNav</title>
+    <meta name="theme-color" content="#080b12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CampusNav">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
 
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        .info-header {
-            margin-bottom: 28px;
-        }
-
-        .info-header h1 {
-            margin-bottom: 8px;
-        }
-
-        .info-header p {
-            color: var(--muted-text);
-            margin: 0;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 36px;
-        }
-
-        .info-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 20px;
-            min-height: 170px;
-            display: flex;
-            flex-direction: column;
-            transition: 0.2s ease;
-        }
-
-        .info-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--accent);
-        }
-
-        .info-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(59, 130, 246, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 21px;
-            margin-bottom: 15px;
-        }
-
-        .info-card h3 {
-            margin: 0 0 7px;
-            font-size: 17px;
-        }
-
-        .info-card p {
-            margin: 0;
-            color: var(--muted-text);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .info-footer {
-            margin-top: auto;
-            padding-top: 16px;
-        }
-
-        .info-link {
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .info-link:hover {
-            text-decoration: underline;
-        }
-
-        .notice-section {
-            margin-bottom: 36px;
-        }
-
-        .section-heading {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-heading h2 {
-            margin: 0;
-            font-size: 21px;
-        }
-
-        .section-heading span {
-            color: var(--muted-text);
-            font-size: 13px;
-        }
-
-        .notice-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 18px 20px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .notice-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 11px;
-            background: rgba(59, 130, 246, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .notice-content {
-            flex: 1;
-        }
-
-        .notice-content h3 {
-            margin: 0 0 5px;
-            font-size: 15px;
-        }
-
-        .notice-content p {
-            margin: 0;
-            color: var(--muted-text);
-            font-size: 13px;
-        }
-
-        .notice-date {
-            color: var(--muted-text);
-            font-size: 12px;
-            white-space: nowrap;
-        }
-
-        .emergency-card {
-            border-color: rgba(239, 68, 68, 0.35);
-        }
-
-        .emergency-card .info-icon {
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        @media (max-width: 900px) {
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .section-heading {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 6px;
-            }
-
-            .notice-card {
-                align-items: flex-start;
-            }
-
-            .notice-date {
-                display: none;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="campusnav.css?v=home10">
+    <script src="theme.js"></script>
 </head>
 
-<body>
+<body data-page="info">
+    <script src="shell.js?v=2"></script>
 
-    <header class="top-header">
+    <main class="cn-main">
 
-        <div class="logo">
-            CampusNav
-        </div>
+        <h1 class="cn-title">Campus info</h1>
+        <p class="cn-sub">Useful information for everyday campus life</p>
 
-        <nav class="desktop-nav">
-            <a href="index.html">Home</a>
-            <a href="map.html">Map</a>
-            <a href="timetable.html">Timetable</a>
-            <a href="explore.html">Explore</a>
-            <a href="events.html">Events</a>
-            <a href="groups.html">Groups</a>
-            <a href="campus-info.html" class="active">Campus Info</a>
-        </nav>
-
-        <button id="themeToggle" class="theme-toggle">
-            🌙
-        </button>
-
-    </header>
-
-
-    <main class="main-container">
-
-        <section class="info-header">
-
-            <h1>Campus Info</h1>
-
-            <p>
-                Useful information and resources for everyday campus life.
-            </p>
-
+        <section class="cn-section" aria-labelledby="linksHeading">
+            <div class="cn-section-head">
+                <h2 id="linksHeading">Find things</h2>
+            </div>
+            <ol class="list" id="infoList"></ol>
         </section>
 
-
-        <section class="info-grid">
-
-
-            <article class="info-card">
-
-                <div class="info-icon">
-                    🏫
-                </div>
-
-                <h3>Facilities</h3>
-
-                <p>
-                    Find classrooms, laboratories, library, cafeteria and other campus facilities.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="explore.html"
-                        class="info-link"
-                    >
-                        Explore facilities →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="info-card">
-
-                <div class="info-icon">
-                    🧑‍🏫
-                </div>
-
-                <h3>Faculty & Departments</h3>
-
-                <p>
-                    Find departments, faculty locations and academic areas around campus.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="map.html?destination=block%20a"
-                        class="info-link"
-                    >
-                        Find academic areas →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="info-card">
-
-                <div class="info-icon">
-                    🚻
-                </div>
-
-                <h3>Amenities</h3>
-
-                <p>
-                    Locate restrooms, study spaces, food areas and other useful amenities.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="explore.html"
-                        class="info-link"
-                    >
-                        Explore amenities →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="info-card">
-
-                <div class="info-icon">
-                    📢
-                </div>
-
-                <h3>Campus Notices</h3>
-
-                <p>
-                    Important announcements, deadlines and campus updates in one place.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="#notices"
-                        class="info-link"
-                    >
-                        View notices →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="info-card">
-
-                <div class="info-icon">
-                    📚
-                </div>
-
-                <h3>Library</h3>
-
-                <p>
-                    Find the library and use CampusNav to navigate there from anywhere on campus.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="map.html?destination=library"
-                        class="info-link"
-                    >
-                        Navigate to library →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-            <article class="info-card emergency-card">
-
-                <div class="info-icon">
-                    🚨
-                </div>
-
-                <h3>Emergency Information</h3>
-
-                <p>
-                    Access important emergency locations and campus safety information.
-                </p>
-
-                <div class="info-footer">
-
-                    <a
-                        href="map.html"
-                        class="info-link"
-                    >
-                        Open campus map →
-                    </a>
-
-                </div>
-
-            </article>
-
-
-        </section>
-
-
-        <section class="notice-section" id="notices">
-
-            <div class="section-heading">
-
-                <h2>Campus Notices</h2>
-
-                <span>
-                    Latest updates
-                </span>
-
+        <section class="cn-section" id="notices" aria-labelledby="noticesHeading">
+            <div class="cn-section-head">
+                <h2 id="noticesHeading">Notices</h2>
             </div>
-
-
-            <div class="notice-card">
-
-                <div class="notice-icon">
-                    📢
-                </div>
-
-                <div class="notice-content">
-
-                    <h3>
-                        Timetable updates
-                    </h3>
-
-                    <p>
-                        Check your timetable before heading to your next class.
-                    </p>
-
-                </div>
-
-                <span class="notice-date">
-                    Today
-                </span>
-
-            </div>
-
-
-            <div class="notice-card">
-
-                <div class="notice-icon">
-                    🏫
-                </div>
-
-                <div class="notice-content">
-
-                    <h3>
-                        Campus facilities
-                    </h3>
-
-                    <p>
-                        Explore campus facilities and locations through CampusNav.
-                    </p>
-
-                </div>
-
-                <span class="notice-date">
-                    This week
-                </span>
-
-            </div>
-
-
-            <div class="notice-card">
-
-                <div class="notice-icon">
-                    🔔
-                </div>
-
-                <div class="notice-content">
-
-                    <h3>
-                        Event updates
-                    </h3>
-
-                    <p>
-                        Check the Events section for upcoming student activities.
-                    </p>
-
-                </div>
-
-                <span class="notice-date">
-                    This week
-                </span>
-
-            </div>
-
+            <ol class="list" id="noticeList"></ol>
         </section>
 
     </main>
 
-
-    <nav class="mobile-bottom-nav">
-
-        <a href="index.html">
-            <span>⌂</span>
-            Home
-        </a>
-
-        <a href="map.html">
-            <span>🧭</span>
-            Map
-        </a>
-
-        <a href="timetable.html">
-            <span>📅</span>
-            Schedule
-        </a>
-
-        <a href="explore.html">
-            <span>🔎</span>
-            Explore
-        </a>
-
-    </nav>
-
-
+    <script src="utils.js"></script>
+    <script src="icons.js"></script>
     <script>
 
-        const themeToggle =
-            document.getElementById("themeToggle");
+        const INFO = [
+            { name: "Facilities", icon: "building", about: "Classrooms, laboratories, library, cafeteria and other facilities.", href: "explore.html" },
+            { name: "Faculty and departments", icon: "cap", about: "Departments, faculty locations and academic areas.", href: "map.html?destination=block-a" },
+            { name: "Amenities", icon: "compass", about: "Study spaces, food areas and other useful places.", href: "explore.html" },
+            { name: "Library", icon: "book", about: "Find the library and get the route from anywhere on campus.", href: "map.html?destination=library" },
+            { name: "Emergency information", icon: "alert", about: "Important emergency locations and campus safety information.", href: "map.html", danger: true }
+        ];
 
-        const savedTheme =
-            localStorage.getItem("campusnav-theme");
+        const NOTICES = [
+            { name: "Timetable updates", about: "Check your timetable before heading to your next class.", when: "Today" },
+            { name: "Campus facilities", about: "Explore campus facilities and locations through CampusNav.", when: "This week" },
+            { name: "Event updates", about: "Check the Events section for upcoming student activities.", when: "This week" }
+        ];
 
-        if (savedTheme) {
+        document.getElementById("infoList").innerHTML = INFO.map(function (item) {
 
-            document.documentElement.setAttribute(
-                "data-theme",
-                savedTheme
+            return (
+                '<a class="list-row' + (item.danger ? " danger" : "") + '" href="' + escapeHTML(item.href) + '">' +
+                    '<span class="row-tile">' + iconSVG(item.icon) + "</span>" +
+                    '<div class="row-body"><h3>' + escapeHTML(item.name) + "</h3><p>" + escapeHTML(item.about) + "</p></div>" +
+                    '<span class="row-arrow">' + iconSVG("arrow") + "</span>" +
+                "</a>"
             );
+        }).join("");
 
-        }
+        document.getElementById("noticeList").innerHTML = NOTICES.map(function (item) {
 
-        function updateThemeIcon() {
-
-            const currentTheme =
-                document.documentElement.getAttribute("data-theme");
-
-            themeToggle.textContent =
-                currentTheme === "light"
-                    ? "☀️"
-                    : "🌙";
-        }
-
-        updateThemeIcon();
-
-
-        themeToggle.addEventListener("click", () => {
-
-            const currentTheme =
-                document.documentElement.getAttribute("data-theme");
-
-            const newTheme =
-                currentTheme === "light"
-                    ? "dark"
-                    : "light";
-
-            document.documentElement.setAttribute(
-                "data-theme",
-                newTheme
+            return (
+                '<li class="list-row">' +
+                    '<span class="row-tile">' + iconSVG("megaphone") + "</span>" +
+                    '<div class="row-body"><h3>' + escapeHTML(item.name) + "</h3><p>" + escapeHTML(item.about) + "</p></div>" +
+                    '<span class="notice-date">' + escapeHTML(item.when) + "</span>" +
+                "</li>"
             );
-
-            localStorage.setItem(
-                "campusnav-theme",
-                newTheme
-            );
-
-            updateThemeIcon();
-
-        });
+        }).join("");
 
     </script>
-
 </body>
+
 </html>

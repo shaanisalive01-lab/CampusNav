@@ -7,20 +7,7 @@
 // LOCATION
 // ==========================================
 
-function escapeHTML(value) {
-
-    return String(value ?? "").replace(
-        /[&<>"']/g,
-        char => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-        }[char])
-    );
-}
-
+// escapeHTML() now lives in utils.js
 
 function getLocation(locationId) {
 
@@ -156,6 +143,10 @@ function getNextClassAcrossWeek() {
 
         for (const classItem of classes) {
 
+            if (classItem.cancelled) {
+                continue;
+            }
+
             const start =
                 timeToMinutes(
                     classItem.startTime
@@ -207,265 +198,302 @@ function getNextClassAcrossWeek() {
 
 
 // ==========================================
-// DISPLAY SMART CLASS
+// BOARD ROWS (the CampusNav signature)
 // ==========================================
 
-function displayNextClass() {
+// "A204" for rooms, otherwise the place name ("Library").
+function roomLabel(locationId) {
 
-    const container =
-        document.getElementById("nextClass");
+    const location = getLocation(locationId);
 
-    if (!container) {
-        return;
+    if (!location) {
+        return "Campus";
     }
 
-
-    const result =
-        getNextClassAcrossWeek();
-
-
-    if (result.status === "none") {
-
-        container.innerHTML = `
-            <div class="next-class-content">
-
-                <span class="next-class-label">
-                    SCHEDULE
-                </span>
-
-                <h3>
-                    No classes scheduled
-                </h3>
-
-                <p>
-                    Your timetable is currently empty.
-                </p>
-
-            </div>
-        `;
-
-        return;
+    if (/^[a-z]\d{2,3}$/i.test(locationId)) {
+        return locationId.toUpperCase();
     }
 
-
-    const classItem =
-        result.classItem;
-
-
-    const location =
-        getLocation(classItem.location);
+    return location.name;
+}
 
 
-    const building =
-        location
-            ? location.building || "Campus"
-            : "Campus";
+// "Block A · Floor 1"
+function placeLine(locationId) {
 
+    const location = getLocation(locationId);
 
-    const room =
-        location
-            ? location.name
-            : "Unknown Room";
-
-
-    let label =
-        result.status === "current"
-            ? "CURRENT CLASS"
-            : "NEXT CLASS";
-
-
-    let dayText =
-        classItem.day;
-
-
-    const currentDay =
-        getCurrentDay();
-
-
-    if (
-        result.status === "next" &&
-        classItem.day !== currentDay
-    ) {
-
-        dayText =
-            classItem.day;
+    if (!location) {
+        return "Campus";
     }
 
+    const parts = [location.building || "Campus"];
 
-    const navigateURL =
-        `map.html?destination=${encodeURIComponent(
-            classItem.location
-        )}`;
+    if (typeof location.floor === "number" && location.floor > 0) {
+        parts.push("Floor " + location.floor);
+    }
+
+    return parts.join(" · ");
+}
 
 
-    container.innerHTML = `
+function splitTime(time) {
 
-        <div class="next-class-content">
+    // "10:00 AM" -> ["10:00", "AM"]
+    const parts = formatTime(time).split(" ");
 
-            <span class="next-class-label">
-                ${label}
-            </span>
+    return [parts[0], parts[1] || ""];
+}
 
-            <h3>
-                ${escapeHTML(classItem.subject)}
-            </h3>
 
-            <p>
-                ${dayText} ·
-                ${formatTime(classItem.startTime)}
-                –
-                ${formatTime(classItem.endTime)}
-            </p>
+// state: "now" (lit), "past" (dimmed) or "" (normal)
+function classRowHTML(classItem, state, extraMeta) {
 
-            <p>
-                ${building} · ${room}
-            </p>
+    const [clock, period] = splitTime(classItem.startTime);
 
-            <a
-                href="${navigateURL}"
-                class="navigate-btn"
-            >
-                Navigate →
-            </a>
+    const room = roomLabel(classItem.location);
 
-        </div>
-    `;
+    const meta = [
+        placeLine(classItem.location),
+        "Ends " + formatTime(classItem.endTime)
+    ];
+
+    if (extraMeta) {
+        meta.unshift(extraMeta);
+    }
+
+    if (classItem.cancelled) {
+        meta.unshift("Cancelled");
+    }
+
+    const className =
+        "board-row" +
+        (state === "now" ? " is-now" : "") +
+        (state === "past" ? " is-past" : "") +
+        (classItem.cancelled ? " is-cancelled" : "");
+
+    return (
+        '<li class="' + className + '">' +
+            '<span class="when">' + escapeHTML(clock) + "<b>" + escapeHTML(period) + "</b></span>" +
+            '<span class="what">' +
+                '<span class="name">' + escapeHTML(classItem.subject) + "</span>" +
+                '<span class="leader" aria-hidden="true"></span>' +
+            "</span>" +
+            '<a class="where" href="map.html?destination=' + encodeURIComponent(classItem.location) +
+                '" aria-label="Navigate to ' + escapeHTML(room) + '">' + escapeHTML(room) + "</a>" +
+            '<span class="meta">' + escapeHTML(meta.join(" · ")) + "</span>" +
+        "</li>"
+    );
+}
+
+
+const PIN_ICON =
+    '<svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+    '<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/>' +
+    '<circle cx="12" cy="10" r="2.4"/></svg>';
+
+
+function emptyHTML(title, text) {
+
+    return (
+        '<div class="cn-empty"><strong>' + escapeHTML(title) + "</strong>" +
+        escapeHTML(text) + "</div>"
+    );
 }
 
 
 // ==========================================
-// DISPLAY FULL TIMETABLE
+// TODAY BOARD (home page)
 // ==========================================
 
-function displayTimetable() {
+function displayTodayBoard() {
 
-    const container =
-        document.getElementById(
-            "timetableList"
-        );
+    const container = document.getElementById("todayBoard");
 
     if (!container) {
         return;
     }
 
+    const classes = getTodaysClasses();
 
-    container.innerHTML = "";
+    const result = getNextClassAcrossWeek();
 
-
-    const days = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-    ];
+    const now = getCurrentTimeInMinutes();
 
 
-    days.forEach(day => {
+    if (classes.length === 0) {
 
-        const dayClasses =
-            timetable
-                .filter(classItem =>
-                    classItem.day === day
-                )
-                .sort((a, b) =>
-                    timeToMinutes(a.startTime) -
-                    timeToMinutes(b.startTime)
-                );
+        if (result.status === "none") {
 
+            container.innerHTML = emptyHTML(
+                "No classes today",
+                "Your timetable is empty. A class rep can add classes."
+            );
 
-        if (dayClasses.length === 0) {
             return;
         }
 
+        const next = result.classItem;
 
-        const daySection =
-            document.createElement("div");
+        container.innerHTML =
+            emptyHTML("No classes today", "Enjoy it. Your next class is below.") +
+            '<ol class="board" style="margin-top:16px">' +
+            classRowHTML(next, "now", next.day) +
+            "</ol>";
 
-
-        daySection.className =
-            "timetable-day";
-
-
-        daySection.innerHTML =
-            `<h2>${day}</h2>`;
-
-
-        dayClasses.forEach(classItem => {
-
-            const location =
-                getLocation(
-                    classItem.location
-                );
+        return;
+    }
 
 
-            const room =
-                location
-                    ? location.name
-                    : "Unknown Room";
+    // one lit row: the current class, else the next one today
+    const litId =
+        result.classItem && result.classItem.day === getCurrentDay()
+            ? result.classItem.id
+            : null;
+
+    const rows = classes.map(classItem => {
+
+        if (classItem.id === litId) {
+            return classRowHTML(classItem, "now");
+        }
+
+        const ended = timeToMinutes(classItem.endTime) <= now;
+
+        return classRowHTML(classItem, ended ? "past" : "");
+    }).join("");
 
 
-            const card =
-                document.createElement("div");
+    let note = "";
+
+    if (result.classItem) {
+
+        const target = result.classItem;
+
+        const verb = result.status === "current" ? "Now" : "Next";
+
+        note =
+            '<div class="cn-note">' + PIN_ICON +
+            "<p><strong>" + verb + ":</strong> " +
+            escapeHTML(target.subject) + ", " +
+            escapeHTML(placeLine(target.location)) + "</p>" +
+            '<a class="cn-btn" href="map.html?destination=' +
+            encodeURIComponent(target.location) + '">Navigate</a></div>';
+    }
+
+    container.innerHTML = '<ol class="board">' + rows + "</ol>" + note;
+}
 
 
-            card.className =
-                "class-card";
+// ==========================================
+// UP NEXT (timetable page)
+// ==========================================
 
+function displayNextClass() {
 
-            card.innerHTML = `
+    const container = document.getElementById("nextClass");
 
-                <div class="class-time">
+    if (!container) {
+        return;
+    }
 
-                    ${formatTime(
-                        classItem.startTime
-                    )}
+    const result = getNextClassAcrossWeek();
 
-                    –
+    if (result.status === "none") {
 
-                    ${formatTime(
-                        classItem.endTime
-                    )}
-
-                </div>
-
-
-                <div class="class-info">
-
-                    <h3>
-                        ${escapeHTML(classItem.subject)}
-                    </h3>
-
-                    <p>
-                        ${room}
-                    </p>
-
-                </div>
-
-
-                <a
-                    href="map.html?destination=${encodeURIComponent(
-                        classItem.location
-                    )}"
-                    class="navigate-btn"
-                >
-                    Navigate →
-                </a>
-
-            `;
-
-
-            daySection.appendChild(card);
-
-        });
-
-
-        container.appendChild(
-            daySection
+        container.innerHTML = emptyHTML(
+            "No classes scheduled",
+            "Your timetable is currently empty."
         );
 
-    });
+        return;
+    }
+
+    const classItem = result.classItem;
+
+    const label = result.status === "current" ? "Now" : classItem.day;
+
+    container.innerHTML =
+        '<ol class="board">' + classRowHTML(classItem, "now", label) + "</ol>" +
+        '<div class="cn-note">' + PIN_ICON +
+        "<p>Walking route to " + escapeHTML(roomLabel(classItem.location)) + "</p>" +
+        '<a class="cn-btn" href="map.html?destination=' +
+        encodeURIComponent(classItem.location) + '">Navigate</a></div>';
+}
+
+
+// ==========================================
+// DAY BOARD (timetable page)
+// ==========================================
+
+const TIMETABLE_DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
+
+function getDefaultDay() {
+
+    const today = getCurrentDay();
+
+    return TIMETABLE_DAYS.includes(today) ? today : "Monday";
+}
+
+
+function displayTimetable(day) {
+
+    const container = document.getElementById("timetableList");
+
+    if (!container) {
+        return;
+    }
+
+    const selected = TIMETABLE_DAYS.includes(day) ? day : getDefaultDay();
+
+    const classes = timetable
+        .filter(classItem => classItem.day === selected)
+        .sort((a, b) =>
+            timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
+        );
+
+    if (classes.length === 0) {
+
+        container.innerHTML = emptyHTML(
+            "No classes on " + selected,
+            "Nothing is scheduled for this day yet."
+        );
+
+        return;
+    }
+
+    const isToday = selected === getCurrentDay();
+
+    const now = getCurrentTimeInMinutes();
+
+    const result = getNextClassAcrossWeek();
+
+    const litId =
+        isToday && result.classItem && result.classItem.day === selected
+            ? result.classItem.id
+            : null;
+
+    container.innerHTML =
+        '<ol class="board">' +
+        classes.map(classItem => {
+
+            if (classItem.id === litId) {
+                return classRowHTML(classItem, "now");
+            }
+
+            const ended = isToday && timeToMinutes(classItem.endTime) <= now;
+
+            return classRowHTML(classItem, ended ? "past" : "");
+
+        }).join("") +
+        "</ol>";
 }
 
 
@@ -473,16 +501,65 @@ function displayTimetable() {
 // TIMETABLE REFRESH
 // ==========================================
 
-function startTimetableRefresh() {
+let selectedTimetableDay = null;
+
+
+function setTimetableDay(day) {
+
+    selectedTimetableDay = day;
+
+    displayTimetable(day);
+}
+
+
+let lastRenderKey = "";
+
+
+// Something visible changes only when the day, the lit class or the
+// number of finished classes changes. Redrawing otherwise would replay
+// the lit-row animation every minute and drop keyboard focus.
+function getRenderKey() {
+
+    const result = getNextClassAcrossWeek();
+
+    const now = getCurrentTimeInMinutes();
+
+    return [
+        getCurrentDay(),
+        result.status,
+        result.classItem ? result.classItem.id : "",
+        getTodaysClasses().filter(classItem =>
+            timeToMinutes(classItem.endTime) <= now
+        ).length
+    ].join("|");
+}
+
+
+function refreshTimetable(force) {
+
+    const key = getRenderKey();
+
+    if (!force && key === lastRenderKey) {
+        return;
+    }
+
+    lastRenderKey = key;
 
     displayNextClass();
 
+    displayTodayBoard();
 
-    setInterval(() => {
+    if (document.getElementById("timetableList")) {
+        displayTimetable(selectedTimetableDay);
+    }
+}
 
-        displayNextClass();
 
-    }, 60000);
+function startTimetableRefresh() {
+
+    refreshTimetable(true);
+
+    setInterval(() => refreshTimetable(false), 60000);
 }
 
 
@@ -490,13 +567,4 @@ function startTimetableRefresh() {
 // INITIALIZE
 // ==========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        displayTimetable();
-
-        startTimetableRefresh();
-
-    }
-);
+document.addEventListener("DOMContentLoaded", startTimetableRefresh);

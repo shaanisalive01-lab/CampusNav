@@ -1,967 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-default="system">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="theme-color"
-        content="#080b12"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>CampusNav | Events</title>
-
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-
-        .events-main {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 48px 28px 100px;
-        }
-
-
-        .events-hero {
-            margin-bottom: 32px;
-        }
-
-
-        .events-hero h1 {
-            margin: 8px 0 10px;
-
-            font-size:
-                clamp(2.4rem, 5vw, 3.8rem);
-
-            line-height: 1;
-
-            letter-spacing: -0.045em;
-        }
-
-
-        .events-hero p {
-            margin: 0;
-
-            max-width: 650px;
-
-            color:
-                var(--text-muted, #9ca3af);
-
-            line-height: 1.6;
-        }
-
-
-        .events-search {
-            display: flex;
-
-            align-items: center;
-
-            gap: 12px;
-
-            padding: 12px 16px;
-
-            margin-bottom: 20px;
-
-            background:
-                var(--card-bg, #11151d);
-
-            border:
-                1px solid var(--border, #242936);
-
-            border-radius: 14px;
-        }
-
-
-        .events-search span {
-            color:
-                var(--text-muted, #9ca3af);
-        }
-
-
-        .events-search input {
-            flex: 1;
-
-            min-width: 0;
-
-            border: none;
-
-            outline: none;
-
-            background: transparent;
-
-            color:
-                var(--text, #f5f7fb);
-        }
-
-
-        .events-filters {
-            display: flex;
-
-            flex-wrap: wrap;
-
-            gap: 9px;
-
-            margin-bottom: 30px;
-        }
-
-
-        .event-filter {
-            padding:
-                9px 15px;
-
-            border:
-                1px solid var(--border, #242936);
-
-            border-radius: 10px;
-
-            background:
-                var(--card-bg, #11151d);
-
-            color:
-                var(--text-muted, #9ca3af);
-
-            cursor: pointer;
-        }
-
-
-        .event-filter.active {
-            background:
-                var(--accent, #4f7cff);
-
-            border-color:
-                var(--accent, #4f7cff);
-
-            color: white;
-        }
-
-
-        .events-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 16px;
-        }
-
-
-        .event-card {
-            padding: 20px;
-
-            background:
-                var(--card-bg, #11151d);
-
-            border:
-                1px solid var(--border, #242936);
-
-            border-radius: 16px;
-
-            transition:
-                transform .2s ease,
-                border-color .2s ease;
-        }
-
-
-        .event-card:hover {
-            transform:
-                translateY(-3px);
-
-            border-color:
-                rgba(79,124,255,.45);
-        }
-
-
-        .event-type {
-            display: inline-block;
-
-            margin-bottom: 15px;
-
-            padding:
-                5px 9px;
-
-            border-radius: 7px;
-
-            background:
-                rgba(79,124,255,.1);
-
-            color:
-                var(--accent, #4f7cff);
-
-            font-size: .7rem;
-
-            font-weight: 700;
-
-            text-transform: uppercase;
-        }
-
-
-        .event-card h3 {
-            margin:
-                0 0 8px;
-
-            font-size: 1.05rem;
-        }
-
-
-        .event-card p {
-            margin:
-                6px 0;
-
-            color:
-                var(--text-muted, #9ca3af);
-
-            font-size: .82rem;
-
-            line-height: 1.5;
-        }
-
-
-        .event-actions {
-            display: flex;
-
-            gap: 9px;
-
-            margin-top: 18px;
-        }
-
-
-        .event-button {
-            flex: 1;
-
-            padding:
-                9px 12px;
-
-            border:
-                1px solid var(--border, #242936);
-
-            border-radius: 9px;
-
-            background:
-                transparent;
-
-            color:
-                var(--text, #f5f7fb);
-
-            cursor: pointer;
-
-            font-size: .78rem;
-        }
-
-
-        .event-button.primary {
-            background:
-                var(--accent, #4f7cff);
-
-            border-color:
-                var(--accent, #4f7cff);
-
-            color: white;
-        }
-
-
-        .no-events {
-            display: none;
-
-            padding: 40px;
-
-            text-align: center;
-
-            color:
-                var(--text-muted, #9ca3af);
-
-            border:
-                1px dashed var(--border, #242936);
-
-            border-radius: 16px;
-        }
-
-
-        @media (max-width: 900px) {
-
-            .events-grid {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-        }
-
-
-        @media (max-width: 600px) {
-
-            .events-main {
-                padding:
-                    32px 18px 90px;
-            }
-
-            .events-grid {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
-
-
-    <script>
-
-        (function () {
-
-            const savedTheme =
-                localStorage.getItem("campusnav-theme");
-
-            if (savedTheme) {
-
-                document.documentElement.dataset.theme =
-                    savedTheme;
-
-            }
-
-        })();
-
-    </script>
-
+    <meta name="description" content="What is on at campus: academic sessions, technical events, club activities and hangouts.">
+
+    <meta name="theme-color" content="#080b12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="CampusNav">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="campusnav.css?v=home10">
+    <script src="theme.js"></script>
 </head>
 
+<body data-page="events">
+    <script src="shell.js?v=2"></script>
 
-<body>
+    <main class="cn-main">
 
+        <h1 class="cn-title">Events</h1>
+        <p class="cn-sub">Academic, technical, club and social</p>
 
-<header>
+        <div class="cn-search" role="search">
+            <label class="sr-only" for="eventSearch">Search events</label>
+            <input id="eventSearch" type="search" placeholder="Search events" autocomplete="off">
+        </div>
 
-    <a href="index.html" class="logo">
-        Campus<span>Nav</span>
-    </a>
+        <div class="cn-tabs fit" role="group" aria-label="Filter events by type">
+            <button type="button" class="event-filter" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="event-filter" data-filter="academic" aria-pressed="false">Academic</button>
+            <button type="button" class="event-filter" data-filter="technical" aria-pressed="false">Technical</button>
+            <button type="button" class="event-filter" data-filter="social" aria-pressed="false">Social</button>
+        </div>
 
+        <section class="cn-section" aria-label="Event list">
+            <ol class="board" id="eventsBoard" aria-live="polite"></ol>
+            <div class="cn-empty" id="noEvents" hidden>
+                <strong>No events match</strong>
+                Try another word, or switch the filter back to All.
+            </div>
+        </section>
 
-    <nav>
-
-        <a href="index.html">
-            Home
-        </a>
-
-        <a href="map.html">
-            Map
-        </a>
-
-        <a href="timetable.html">
-            Timetable
-        </a>
-
-        <a href="explore.html">
-            Explore
-        </a>
-
-        <a
-            href="events.html"
-            class="active"
-        >
-            Events
-        </a>
-
-        <a href="groups.html">
-            Groups
-        </a>
-
-    </nav>
-
-
-    <button
-        class="theme-toggle"
-        id="themeToggle"
-        type="button"
-    >
-        🌙
-    </button>
-
-</header>
-
-
-
-<main class="events-main">
-
-
-    <section class="events-hero">
-
-        <p class="eyebrow">
-            CAMPUS EVENTS
+        <p class="cn-footnote">
+            The weekly events shown are samples until the college shares the real list. Club events added on the
+            club admin page are saved in this browser only, so other students will not see them yet.
         </p>
 
-        <h1>
-            What's happening?
-        </h1>
+    </main>
 
-        <p>
-            Discover academic sessions, technical
-            events, club activities and campus hangouts.
-        </p>
+    <script src="utils.js"></script>
+    <script src="eventsData.js?v=2"></script>
+    <script>
 
-    </section>
+        const board = document.getElementById("eventsBoard");
+        const search = document.getElementById("eventSearch");
+        const noEvents = document.getElementById("noEvents");
+        const filters = document.querySelectorAll(".event-filter");
 
+        const events = getAllEvents();
 
+        let currentFilter = "all";
 
-    <div class="events-search">
 
-        <span>
-            ⌕
-        </span>
+        function renderEvents() {
 
-        <input
-            id="eventSearch"
-            type="text"
-            placeholder="Search events..."
-            autocomplete="off"
-        >
+            const query = search.value.trim().toLowerCase();
 
-    </div>
+            const visible = events.filter(function (event) {
 
+                const filterMatch =
+                    currentFilter === "all" ||
+                    event.category === currentFilter;
 
+                const searchMatch =
+                    !query ||
+                    (event.name + " " + event.place + " " + event.day)
+                        .toLowerCase()
+                        .includes(query);
 
-    <div class="events-filters">
+                return filterMatch && searchMatch;
+            });
 
-        <button
-            class="event-filter active"
-            data-filter="all"
-        >
-            All
-        </button>
+            board.innerHTML = visible.map(eventRowHTML).join("");
 
-        <button
-            class="event-filter"
-            data-filter="academic"
-        >
-            Academic
-        </button>
-
-        <button
-            class="event-filter"
-            data-filter="technical"
-        >
-            Technical
-        </button>
-
-        <button
-            class="event-filter"
-            data-filter="social"
-        >
-            Social
-        </button>
-
-    </div>
-
-
-
-    <div
-        class="events-grid"
-        id="eventsGrid"
-    >
-
-
-        <article
-            class="event-card"
-            data-category="technical"
-            data-name="robotics club meeting"
-        >
-
-            <span class="event-type">
-                Technical
-            </span>
-
-            <h3>
-                Robotics Club Meeting
-            </h3>
-
-            <p>
-                📅 Today · 3:30 PM
-            </p>
-
-            <p>
-                📍 Block A
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('Robotics Club Meeting')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=block-a"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-
-        <article
-            class="event-card"
-            data-category="technical"
-            data-name="cad design workshop"
-        >
-
-            <span class="event-type">
-                Technical
-            </span>
-
-            <h3>
-                CAD Design Workshop
-            </h3>
-
-            <p>
-                📅 Tomorrow · 11:00 AM
-            </p>
-
-            <p>
-                📍 Room 204
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('CAD Design Workshop')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=a204"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-
-        <article
-            class="event-card"
-            data-category="social"
-            data-name="freshers meetup"
-        >
-
-            <span class="event-type">
-                Social
-            </span>
-
-            <h3>
-                Freshers Meetup
-            </h3>
-
-            <p>
-                📅 Friday · 6:00 PM
-            </p>
-
-            <p>
-                📍 Main Gate
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('Freshers Meetup')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=main-gate"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-
-        <article
-            class="event-card"
-            data-category="academic"
-            data-name="physics lab session"
-        >
-
-            <span class="event-type">
-                Academic
-            </span>
-
-            <h3>
-                Physics Lab Session
-            </h3>
-
-            <p>
-                📅 Monday · 2:00 PM
-            </p>
-
-            <p>
-                📍 Physics Lab
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('Physics Lab Session')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=a105"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-
-        <article
-            class="event-card"
-            data-category="social"
-            data-name="motorsport discussion"
-        >
-
-            <span class="event-type">
-                Social
-            </span>
-
-            <h3>
-                Motorsport Discussion
-            </h3>
-
-            <p>
-                📅 Wednesday · 4:30 PM
-            </p>
-
-            <p>
-                📍 Library
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('Motorsport Discussion')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=library"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-
-        <article
-            class="event-card"
-            data-category="social"
-            data-name="student hangout"
-        >
-
-            <span class="event-type">
-                Social
-            </span>
-
-            <h3>
-                Student Hangout
-            </h3>
-
-            <p>
-                📅 Saturday · 5:00 PM
-            </p>
-
-            <p>
-                📍 Cafeteria
-            </p>
-
-            <div class="event-actions">
-
-                <button
-                    class="event-button"
-                    onclick="showEvent('Student Hangout')"
-                >
-                    View Event
-                </button>
-
-                <a
-                    class="event-button primary"
-                    href="map.html?destination=cafeteria"
-                >
-                    Navigate
-                </a>
-
-            </div>
-
-        </article>
-
-
-    </div>
-
-
-
-    <div
-        class="no-events"
-        id="noEvents"
-    >
-        No events found.
-    </div>
-
-
-</main>
-
-
-
-<div class="mobile-nav">
-
-    <a href="index.html">
-
-        <span class="mobile-nav-icon">
-            🏠
-        </span>
-
-        Home
-
-    </a>
-
-
-    <a href="map.html">
-
-        <span class="mobile-nav-icon">
-            🗺️
-        </span>
-
-        Map
-
-    </a>
-
-
-    <a href="timetable.html">
-
-        <span class="mobile-nav-icon">
-            📅
-        </span>
-
-        Schedule
-
-    </a>
-
-
-    <a
-        href="events.html"
-        class="active"
-    >
-
-        <span class="mobile-nav-icon">
-            🎉
-        </span>
-
-        Events
-
-    </a>
-
-</div>
-
-
-
-<script>
-
-    const themeToggle =
-        document.getElementById("themeToggle");
-
-
-    function updateThemeButton() {
-
-        const theme =
-            document.documentElement.dataset.theme;
-
-        themeToggle.textContent =
-            theme === "light"
-                ? "☀️"
-                : "🌙";
-
-    }
-
-
-    themeToggle.addEventListener(
-        "click",
-        function () {
-
-            const current =
-                document.documentElement.dataset.theme;
-
-            const next =
-                current === "light"
-                    ? "dark"
-                    : "light";
-
-
-            document.documentElement.dataset.theme =
-                next;
-
-
-            localStorage.setItem(
-                "campusnav-theme",
-                next
-            );
-
-
-            updateThemeButton();
-
+            noEvents.hidden = visible.length > 0;
         }
-    );
 
 
-    updateThemeButton();
+        filters.forEach(function (filter) {
 
+            filter.addEventListener("click", function () {
 
+                filters.forEach(function (item) {
+                    item.setAttribute("aria-pressed", String(item === filter));
+                });
 
-    const filters =
-        document.querySelectorAll(".event-filter");
+                currentFilter = filter.dataset.filter;
 
-    const cards =
-        document.querySelectorAll(".event-card");
-
-    const search =
-        document.getElementById("eventSearch");
-
-    const noEvents =
-        document.getElementById("noEvents");
-
-
-    let currentFilter = "all";
-
-
-    function updateEvents() {
-
-        const query =
-            search.value
-                .trim()
-                .toLowerCase();
-
-        let count = 0;
-
-
-        cards.forEach(function (card) {
-
-            const category =
-                card.dataset.category;
-
-            const name =
-                card.dataset.name;
-
-            const filterMatch =
-                currentFilter === "all" ||
-                category === currentFilter;
-
-            const searchMatch =
-                !query ||
-                name.includes(query);
-
-
-            if (
-                filterMatch &&
-                searchMatch
-            ) {
-
-                card.style.display = "block";
-
-                count++;
-
-            } else {
-
-                card.style.display = "none";
-
-            }
-
+                renderEvents();
+            });
         });
 
 
-        noEvents.style.display =
-            count === 0
-                ? "block"
-                : "none";
+        search.addEventListener("input", renderEvents);
 
-    }
+        renderEvents();
 
-
-    filters.forEach(function (filter) {
-
-        filter.addEventListener(
-            "click",
-            function () {
-
-                filters.forEach(function (item) {
-
-                    item.classList.remove("active");
-
-                });
-
-
-                filter.classList.add("active");
-
-
-                currentFilter =
-                    filter.dataset.filter;
-
-
-                updateEvents();
-
-            }
-        );
-
-    });
-
-
-    search.addEventListener(
-        "input",
-        updateEvents
-    );
-
-
-    function showEvent(name) {
-
-        alert(
-            name +
-            "\n\nEvent details will be connected here later."
-        );
-
-    }
-
-
-    updateEvents();
-
-</script>
-
-
+    </script>
 </body>
+
 </html>

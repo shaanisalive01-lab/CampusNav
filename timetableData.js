@@ -52,31 +52,90 @@ const baseTimetable = [
 
 
 // ==========================================
-// LOAD SAVED CR CHANGES
+// LOAD SAVED CR CHANGES (validated)
 // ==========================================
 
-function loadTimetableChanges() {
+const TIMETABLE_OVERRIDES_KEY = "campusnav-timetable-overrides";
 
-    try {
+// Keep only the fields a class rep is allowed to change,
+// and only if they have the right type.
+function sanitizeOverride(override) {
 
-        const saved =
-            localStorage.getItem("campusnav-timetable-overrides");
+    if (override === null || typeof override !== "object") {
+        return null;
+    }
 
-        if (!saved) {
-            return {};
+    const clean = {};
+
+    if (typeof override.location === "string" && isLocationId(override.location)) {
+        clean.location = override.location;
+    }
+
+    if (isValidTime(override.startTime)) {
+        clean.startTime = override.startTime;
+    }
+
+    if (isValidTime(override.endTime)) {
+        clean.endTime = override.endTime;
+    }
+
+    // A class cannot end before it starts: drop both times if so.
+    if (
+        clean.startTime &&
+        clean.endTime &&
+        clean.startTime >= clean.endTime
+    ) {
+        delete clean.startTime;
+        delete clean.endTime;
+    }
+
+    if (typeof override.cancelled === "boolean") {
+        clean.cancelled = override.cancelled;
+    }
+
+    return clean;
+}
+
+
+// Shared by the timetable pages and the CR editor (cr.html).
+function loadOverrides() {
+
+    const saved = readJSON(
+        TIMETABLE_OVERRIDES_KEY,
+        {},
+        value =>
+            value !== null &&
+            typeof value === "object" &&
+            !Array.isArray(value)
+    );
+
+    const knownIds = new Set(baseTimetable.map(item => item.id));
+
+    const overrides = {};
+
+    Object.keys(saved).forEach(id => {
+
+        if (!knownIds.has(id)) {
+            return;
         }
 
-        return JSON.parse(saved);
+        const clean = sanitizeOverride(saved[id]);
 
-    } catch (error) {
+        if (clean) {
+            overrides[id] = clean;
+        }
+    });
 
-        console.error(
-            "Could not load timetable changes:",
-            error
-        );
+    return overrides;
+}
 
-        return {};
-    }
+
+function saveOverrides(overrides) {
+
+    return writeJSON(
+        TIMETABLE_OVERRIDES_KEY,
+        overrides
+    );
 }
 
 
@@ -86,7 +145,7 @@ function loadTimetableChanges() {
 
 function getEffectiveTimetable() {
 
-    const overrides = loadTimetableChanges();
+    const overrides = loadOverrides();
 
     return baseTimetable.map(classItem => {
 
