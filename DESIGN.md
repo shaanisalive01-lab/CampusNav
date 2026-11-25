@@ -1,6 +1,6 @@
 # CampusNav design notes
 
-The front end switched to this design on 26 November 2026. The previous one is kept in `old-frontend/`.
+The front end switched to this design on 26 November 2026. A local copy of the previous one, `old-frontend/`, is not part of the repository.
 
 ## Layout
 - One page (`index.html`) with hash routes. Styles and screen scripts are in `app/`; campus data stays at the root.
