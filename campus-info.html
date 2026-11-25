@@ -1,89 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme-default="system">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CampusNav | Campus info</title>
-    <meta name="description" content="Facilities, departments, amenities, notices and emergency information for campus life.">
-
-    <meta name="theme-color" content="#080b12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="CampusNav">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="campusnav.css?v=home10">
-    <script src="theme.js"></script>
+    <script src="redirect.js" data-page="info" data-base=""></script>
 </head>
-
-<body data-page="info">
-    <script src="shell.js?v=2"></script>
-
-    <main class="cn-main">
-
-        <h1 class="cn-title">Campus info</h1>
-        <p class="cn-sub">Useful information for everyday campus life</p>
-
-        <section class="cn-section" aria-labelledby="linksHeading">
-            <div class="cn-section-head">
-                <h2 id="linksHeading">Find things</h2>
-            </div>
-            <ol class="list" id="infoList"></ol>
-        </section>
-
-        <section class="cn-section" id="notices" aria-labelledby="noticesHeading">
-            <div class="cn-section-head">
-                <h2 id="noticesHeading">Notices</h2>
-            </div>
-            <ol class="list" id="noticeList"></ol>
-        </section>
-
-    </main>
-
-    <script src="utils.js"></script>
-    <script src="icons.js"></script>
-    <script>
-
-        const INFO = [
-            { name: "Facilities", icon: "building", about: "Classrooms, laboratories, library, cafeteria and other facilities.", href: "explore.html" },
-            { name: "Faculty and departments", icon: "cap", about: "Departments, faculty locations and academic areas.", href: "map.html?destination=block-a" },
-            { name: "Amenities", icon: "compass", about: "Study spaces, food areas and other useful places.", href: "explore.html" },
-            { name: "Library", icon: "book", about: "Find the library and get the route from anywhere on campus.", href: "map.html?destination=library" },
-            { name: "Emergency information", icon: "alert", about: "Important emergency locations and campus safety information.", href: "map.html", danger: true }
-        ];
-
-        const NOTICES = [
-            { name: "Timetable updates", about: "Check your timetable before heading to your next class.", when: "Today" },
-            { name: "Campus facilities", about: "Explore campus facilities and locations through CampusNav.", when: "This week" },
-            { name: "Event updates", about: "Check the Events section for upcoming student activities.", when: "This week" }
-        ];
-
-        document.getElementById("infoList").innerHTML = INFO.map(function (item) {
-
-            return (
-                '<a class="list-row' + (item.danger ? " danger" : "") + '" href="' + escapeHTML(item.href) + '">' +
-                    '<span class="row-tile">' + iconSVG(item.icon) + "</span>" +
-                    '<div class="row-body"><h3>' + escapeHTML(item.name) + "</h3><p>" + escapeHTML(item.about) + "</p></div>" +
-                    '<span class="row-arrow">' + iconSVG("arrow") + "</span>" +
-                "</a>"
-            );
-        }).join("");
-
-        document.getElementById("noticeList").innerHTML = NOTICES.map(function (item) {
-
-            return (
-                '<li class="list-row">' +
-                    '<span class="row-tile">' + iconSVG("megaphone") + "</span>" +
-                    '<div class="row-body"><h3>' + escapeHTML(item.name) + "</h3><p>" + escapeHTML(item.about) + "</p></div>" +
-                    '<span class="notice-date">' + escapeHTML(item.when) + "</span>" +
-                "</li>"
-            );
-        }).join("");
-
-    </script>
+<body>
+    <p><a href="index.html#info">Open Campus info in CampusNav</a></p>
 </body>
-
 </html>

@@ -124,7 +124,9 @@ const CLUB_EVENT_LOCATIONS = {
     "a204": "Block A · Room 204",
     "a105": "Block A · Room 105",
     "library": "Library",
-    "cafeteria": "Cafeteria"
+    "cafeteria": "Cafeteria",
+    "science-ground": "Science Block · Ground floor",
+    "science-first": "Science Block · First floor"
 };
 
 

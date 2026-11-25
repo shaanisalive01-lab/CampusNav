@@ -1,118 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme-default="system">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CampusNav | Events</title>
-    <meta name="description" content="What is on at campus: academic sessions, technical events, club activities and hangouts.">
-
-    <meta name="theme-color" content="#080b12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="CampusNav">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="campusnav.css?v=home10">
-    <script src="theme.js"></script>
+    <script src="redirect.js" data-page="events" data-base=""></script>
 </head>
-
-<body data-page="events">
-    <script src="shell.js?v=2"></script>
-
-    <main class="cn-main">
-
-        <h1 class="cn-title">Events</h1>
-        <p class="cn-sub">Academic, technical, club and social</p>
-
-        <div class="cn-search" role="search">
-            <label class="sr-only" for="eventSearch">Search events</label>
-            <input id="eventSearch" type="search" placeholder="Search events" autocomplete="off">
-        </div>
-
-        <div class="cn-tabs fit" role="group" aria-label="Filter events by type">
-            <button type="button" class="event-filter" data-filter="all" aria-pressed="true">All</button>
-            <button type="button" class="event-filter" data-filter="academic" aria-pressed="false">Academic</button>
-            <button type="button" class="event-filter" data-filter="technical" aria-pressed="false">Technical</button>
-            <button type="button" class="event-filter" data-filter="social" aria-pressed="false">Social</button>
-        </div>
-
-        <section class="cn-section" aria-label="Event list">
-            <ol class="board" id="eventsBoard" aria-live="polite"></ol>
-            <div class="cn-empty" id="noEvents" hidden>
-                <strong>No events match</strong>
-                Try another word, or switch the filter back to All.
-            </div>
-        </section>
-
-        <p class="cn-footnote">
-            The weekly events shown are samples until the college shares the real list. Club events added on the
-            club admin page are saved in this browser only, so other students will not see them yet.
-        </p>
-
-    </main>
-
-    <script src="utils.js"></script>
-    <script src="eventsData.js?v=2"></script>
-    <script>
-
-        const board = document.getElementById("eventsBoard");
-        const search = document.getElementById("eventSearch");
-        const noEvents = document.getElementById("noEvents");
-        const filters = document.querySelectorAll(".event-filter");
-
-        const events = getAllEvents();
-
-        let currentFilter = "all";
-
-
-        function renderEvents() {
-
-            const query = search.value.trim().toLowerCase();
-
-            const visible = events.filter(function (event) {
-
-                const filterMatch =
-                    currentFilter === "all" ||
-                    event.category === currentFilter;
-
-                const searchMatch =
-                    !query ||
-                    (event.name + " " + event.place + " " + event.day)
-                        .toLowerCase()
-                        .includes(query);
-
-                return filterMatch && searchMatch;
-            });
-
-            board.innerHTML = visible.map(eventRowHTML).join("");
-
-            noEvents.hidden = visible.length > 0;
-        }
-
-
-        filters.forEach(function (filter) {
-
-            filter.addEventListener("click", function () {
-
-                filters.forEach(function (item) {
-                    item.setAttribute("aria-pressed", String(item === filter));
-                });
-
-                currentFilter = filter.dataset.filter;
-
-                renderEvents();
-            });
-        });
-
-
-        search.addEventListener("input", renderEvents);
-
-        renderEvents();
-
-    </script>
+<body>
+    <p><a href="index.html#events">Open Events in CampusNav</a></p>
 </body>
-
 </html>

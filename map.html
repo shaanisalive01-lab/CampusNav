@@ -1,102 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme-default="system">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>CampusNav | Map</title>
-    <meta name="description" content="Find any room on campus and get step-by-step directions, with ground floor and level 1.">
-
-    <meta name="theme-color" content="#080b12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="CampusNav">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="campusnav.css?v=home10">
-    <script src="theme.js"></script>
-
-    <style>
-        /* The map fills the screen between the header and the tab bar. */
-        body {
-            padding-bottom: 0;
-        }
-
-        .map-frame {
-            display: block;
-            width: 100%;
-            border: 0;
-            background: var(--bg);
-            height: calc(100vh - var(--header-height) - env(safe-area-inset-top) - var(--tabbar-height) - env(safe-area-inset-bottom));
-            height: calc(100dvh - var(--header-height) - env(safe-area-inset-top) - var(--tabbar-height) - env(safe-area-inset-bottom));
-        }
-
-        @media (min-width: 860px) {
-            .map-frame {
-                height: calc(100vh - var(--header-height) - env(safe-area-inset-top));
-                height: calc(100dvh - var(--header-height) - env(safe-area-inset-top));
-            }
-        }
-    </style>
+    <script src="redirect.js" data-page="map" data-base=""></script>
 </head>
-
-<body data-page="map">
-    <script src="shell.js?v=2"></script>
-
-    <main>
-        <iframe id="mapFrame" class="map-frame" title="Campus map" allow="fullscreen"></iframe>
-        <noscript>
-            <p class="cn-main">The map needs JavaScript. Open <a href="v2/index.html#/map">the map</a> directly.</p>
-        </noscript>
-    </main>
-
-    <script>
-
-        // Deep links keep working: map.html?destination=a204&from=main-gate
-        // (an id such as a204 or a name such as "Room 204").
-        const params = new URLSearchParams(window.location.search);
-
-        const mapParams = new URLSearchParams();
-
-        const destination = (params.get("destination") || "").trim().slice(0, 64);
-
-        const origin = (params.get("from") || "").trim().slice(0, 64);
-
-        if (destination) {
-            mapParams.set("to", destination);
-        }
-
-        if (origin) {
-            mapParams.set("from", origin);
-        }
-
-        const frame = document.getElementById("mapFrame");
-
-        const root = document.documentElement;
-
-        function currentTheme() {
-            return root.dataset.theme === "light" ? "light" : "dark";
-        }
-
-        const query = mapParams.toString();
-
-        frame.src =
-            "v2/index.html?embed=1&theme=" + currentTheme() +
-            "#/map" + (query ? "?" + query : "");
-
-        // Keep the map in the same theme when the switch is used.
-        new MutationObserver(function () {
-            if (frame.contentWindow) {
-                frame.contentWindow.postMessage(
-                    { theme: currentTheme() },
-                    window.location.origin
-                );
-            }
-        }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
-
-    </script>
+<body>
+    <p><a href="index.html#map">Open Map in CampusNav</a></p>
 </body>
-
 </html>

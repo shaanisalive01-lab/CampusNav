@@ -156,10 +156,21 @@ function getEffectiveTimetable() {
             return { ...classItem };
         }
 
-        return {
+        const merged = {
             ...classItem,
             ...override
         };
+
+        // One changed time can still invert the class: keep the original times.
+        if (merged.startTime >= merged.endTime) {
+            return {
+                ...merged,
+                startTime: classItem.startTime,
+                endTime: classItem.endTime
+            };
+        }
+
+        return merged;
 
     });
 }

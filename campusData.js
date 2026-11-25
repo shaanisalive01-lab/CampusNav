@@ -87,6 +87,7 @@ const campusLocations = {
     "a105": {
         id: "a105",
         name: "Room 105",
+        aliases: ["Physics Lab"],
         building: "Block A",
         type: "classroom",
         floor: 0,
@@ -111,6 +112,53 @@ const campusLocations = {
         type: "classroom",
         floor: 1,
         description: "First floor classroom"
+    },
+
+
+    /* -----------------------------------------
+       SCIENCE BLOCK (sample placement: the real
+       floor plan is still to come)
+    ----------------------------------------- */
+
+    "science-block": {
+        id: "science-block",
+        name: "Science Block",
+        building: "Science Block",
+        type: "building",
+        floor: 0,
+        description: "Science Block entrance"
+    },
+
+
+    "science-stairs": {
+        id: "science-stairs",
+        name: "Science Block Stairs",
+        building: "Science Block",
+        type: "stairs",
+        floor: 0,
+        description: "Staircase connecting the Science Block floors"
+    },
+
+
+    "science-ground": {
+        id: "science-ground",
+        name: "Science Block Ground Floor",
+        aliases: ["B011", "B012"],
+        building: "Science Block",
+        type: "floor",
+        floor: 0,
+        description: "Ground floor of the Science Block"
+    },
+
+
+    "science-first": {
+        id: "science-first",
+        name: "Science Block First Floor",
+        aliases: ["B212"],
+        building: "Science Block",
+        type: "floor",
+        floor: 1,
+        description: "First floor of the Science Block"
     },
 
 
@@ -280,6 +328,49 @@ const campusGraph = {
 
 
     /* =========================================
+       SCIENCE BLOCK (sample distances)
+    ========================================= */
+
+    "science-block": {
+
+        "right-road-junction": 110,
+        "science-ground": 30,
+        "science-stairs": 30
+
+    },
+
+
+    "science-ground": {
+
+        "science-block": 30
+
+    },
+
+
+    "science-stairs": {
+
+        "science-block": 30,
+        "science-first-stairs": 15
+
+    },
+
+
+    "science-first-stairs": {
+
+        "science-stairs": 15,
+        "science-first": 35
+
+    },
+
+
+    "science-first": {
+
+        "science-first-stairs": 35
+
+    },
+
+
+    /* =========================================
        LEFT CAMPUS ROAD → LIBRARY
     ========================================= */
 
@@ -322,7 +413,8 @@ const campusGraph = {
     "right-road-junction": {
 
         "main-road-bottom": 75,
-        "right-road-mid": 70
+        "right-road-mid": 70,
+        "science-block": 110
 
     },
 
@@ -452,6 +544,40 @@ const mapCoordinates = {
     "a204": {
         x: 460,
         y: 260
+    },
+
+
+    /* -----------------------------------------
+       SCIENCE BLOCK
+    ----------------------------------------- */
+
+    "science-block": {
+        x: 655,
+        y: 485
+    },
+
+
+    "science-ground": {
+        x: 595,
+        y: 485
+    },
+
+
+    "science-stairs": {
+        x: 715,
+        y: 485
+    },
+
+
+    "science-first-stairs": {
+        x: 715,
+        y: 440
+    },
+
+
+    "science-first": {
+        x: 650,
+        y: 440
     },
 
 

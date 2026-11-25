@@ -1,111 +1,12 @@
-<!doctype html>
-<html lang="en" data-theme="light" data-accent="blue">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>CampusNav</title>
-  <meta name="description" content="Campus navigation, timetable, events and clubs.">
-  <script>
-    /* apply saved theme before paint to avoid a flash */
-    try {
-      var p = JSON.parse(localStorage.getItem("campusnav-v2-prefs") || "{}");
-      var mode = p.theme || "system";
-      var dark = mode === "dark" || (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
-      document.documentElement.dataset.theme = dark ? "dark" : "light";
-      if (p.accent) document.documentElement.dataset.accent = p.accent;
-      if (p.motion === "off") document.documentElement.dataset.motion = "off";
-    } catch (e) {}
-
-    /* embed mode: the main CampusNav site shows this map inside its own
-       header and tab bar, so v2's own chrome is hidden and the theme comes
-       from the parent page (?embed=1&theme=dark|light, then postMessage). */
-    try {
-      var q = new URLSearchParams(location.search);
-      if (q.get("embed")) {
-        document.documentElement.dataset.embed = "1";
-        var t0 = q.get("theme");
-        if (t0 === "dark" || t0 === "light") document.documentElement.dataset.theme = t0;
-      }
-      window.addEventListener("message", function (e) {
-        if (e.origin === location.origin && e.data && (e.data.theme === "dark" || e.data.theme === "light")) {
-          document.documentElement.dataset.theme = e.data.theme;
-        }
-      });
-    } catch (e) {}
-  </script>
-  <link rel="stylesheet" href="styles.css?v=embed1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CampusNav | Map</title>
+    <script src="../redirect.js" data-page="v2" data-base="../"></script>
 </head>
 <body>
-  <!-- icon sprite -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <defs>
-      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8M5 10v10h14V10M10 20v-6h4v6"/></symbol>
-      <symbol id="i-map" viewBox="0 0 24 24"><path d="m9 4-6 2v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/></symbol>
-      <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
-      <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 9a3 3 0 0 0 0 6v3h18v-3a3 3 0 0 1 0-6V6H3zM14 7v2M14 11v2M14 15v2"/></symbol>
-      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.4c2 .7 3.5 2.6 3.5 5.6"/></symbol>
-      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
-      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
-      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
-      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/></symbol>
-      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
-      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
-      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
-      <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
-      <symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></symbol>
-      <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
-      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-      <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
-      <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
-      <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
-      <symbol id="i-stairs" viewBox="0 0 24 24"><path d="M3 20h5v-5h5v-5h5V5h3"/></symbol>
-      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></symbol>
-      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
-      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
-      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
-      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
-      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M9 7h6"/></symbol>
-      <symbol id="i-cup" viewBox="0 0 24 24"><path d="M5 8h12v6a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 3v2M12 3v2"/></symbol>
-      <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/></symbol>
-      <symbol id="i-building" viewBox="0 0 24 24"><path d="M4 21V5l8-2 8 2v16M2 21h20M9 9h2M13 9h2M9 13h2M13 13h2M10 21v-4h4v4"/></symbol>
-    </defs>
-  </svg>
-
-  <div class="app">
-    <aside class="rail" aria-label="Primary">
-      <a class="brand" href="#/home" aria-label="CampusNav home"><svg class="i"><use href="#i-compass"/></svg></a>
-      <div id="railNav" style="display:contents"></div>
-      <div class="spacer"></div>
-      <button class="nav-btn" id="openSettings" aria-label="Settings"><svg class="i"><use href="#i-gear"/></svg>Settings</button>
-    </aside>
-
-    <div class="main">
-      <header class="topbar">
-        <h1 id="viewTitle">Home</h1>
-        <button class="search-trigger" id="openPalette" aria-label="Search campus (Ctrl K)">
-          <svg class="i"><use href="#i-search"/></svg><span>Search places, classes, events…</span><kbd>Ctrl K</kbd>
-        </button>
-        <div class="clock-chip mono" id="clockChip" aria-live="off"></div>
-        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg class="i"><use href="#i-moon"/></svg></button>
-      </header>
-      <main id="view" tabindex="-1"></main>
-    </div>
-  </div>
-
-  <nav class="tabbar" id="tabbar" aria-label="Primary mobile"></nav>
-
-  <dialog id="palette" aria-label="Search">
-    <div class="pal-input"><svg class="i"><use href="#i-search"/></svg><input id="palInput" type="text" placeholder="Search or run a command…" autocomplete="off" spellcheck="false" role="combobox" aria-controls="palList" aria-expanded="true"></div>
-    <ul class="pal-list" id="palList" role="listbox"></ul>
-    <div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> move</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
-  </dialog>
-
-  <dialog id="settings" aria-label="Settings"><div class="settings" id="settingsBody"></div></dialog>
-  <div id="toasts" role="status" aria-live="polite"></div>
-
-  <script src="../utils.js"></script>
-  <script src="../campusData.js"></script>
-  <script src="../timetableData.js"></script>
-  <script src="app.js"></script>
+    <p><a href="../index.html#map">Open Map in CampusNav</a></p>
 </body>
 </html>

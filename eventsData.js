@@ -157,7 +157,7 @@ function eventRowHTML(event) {
             "</span>" +
             '<a class="where sm" href="map.html?destination=' + encodeURIComponent(event.location) +
                 '" aria-label="Navigate to ' + escapeHTML(event.place) + '">' + escapeHTML(event.place) + "</a>" +
-            '<span class="meta">' + escapeHTML(event.day + " · " + event.time + " · " + tag) + "</span>" +
+            '<span class="meta">' + escapeHTML((event.day === "Today" || event.day === "Tomorrow" ? event.day + " · " : "") + event.time + " · " + tag) + "</span>" +
         "</li>"
     );
 }

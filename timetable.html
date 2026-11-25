@@ -1,110 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme-default="system">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>CampusNav | Timetable</title>
-    <meta name="description" content="Your classes day by day, with the room and the route to it.">
-
-    <meta name="theme-color" content="#080b12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="CampusNav">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="icon" href="icon.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="campusnav.css?v=home10">
-    <script src="theme.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CampusNav | My day</title>
+    <script src="redirect.js" data-page="day" data-base=""></script>
 </head>
-
-<body data-page="timetable">
-    <script src="shell.js?v=2"></script>
-
-    <main class="cn-main">
-
-        <h1 class="cn-title">Timetable</h1>
-        <p class="cn-sub" id="todayLabel"></p>
-
-        <section class="cn-section" aria-labelledby="nextHeading">
-            <div class="cn-section-head">
-                <h2 id="nextHeading">Up next</h2>
-            </div>
-            <div id="nextClass" aria-live="polite"></div>
-        </section>
-
-        <section class="cn-section" aria-labelledby="weekHeading">
-            <div class="cn-section-head">
-                <h2 id="weekHeading">The week</h2>
-            </div>
-
-            <div class="cn-tabs fit" role="group" aria-label="Choose a day" id="dayTabs">
-                <button type="button" data-day="Monday" aria-pressed="false">Mon</button>
-                <button type="button" data-day="Tuesday" aria-pressed="false">Tue</button>
-                <button type="button" data-day="Wednesday" aria-pressed="false">Wed</button>
-                <button type="button" data-day="Thursday" aria-pressed="false">Thu</button>
-                <button type="button" data-day="Friday" aria-pressed="false">Fri</button>
-                <button type="button" data-day="Saturday" aria-pressed="false">Sat</button>
-            </div>
-
-            <div id="timetableList" aria-live="polite" style="margin-top:16px"></div>
-        </section>
-
-        <p class="cn-footnote">
-            Room changed? Updates made on the class rep page show here in this browser. Sharing them live between
-            students needs a backend.
-            Class rep? <a href="cr.html">Open the CR dashboard</a>.
-        </p>
-
-    </main>
-
-    <script src="utils.js"></script>
-    <script src="campusData.js"></script>
-    <script src="timetableData.js"></script>
-    <script src="timetable.js"></script>
-    <script>
-
-        // Date under the title
-        document.getElementById("todayLabel").textContent =
-            new Date().toLocaleDateString("en-IN", {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-            });
-
-
-        // Day tabs: start on today (or Monday on a Sunday)
-        const dayButtons = Array.from(
-            document.querySelectorAll("#dayTabs button")
-        );
-
-        function selectDay(day) {
-
-            dayButtons.forEach(function (button) {
-                button.setAttribute(
-                    "aria-pressed",
-                    String(button.dataset.day === day)
-                );
-            });
-
-            setTimetableDay(day);
-        }
-
-        dayButtons.forEach(function (button) {
-
-            if (button.dataset.day === getCurrentDay()) {
-                button.classList.add("is-today");
-            }
-
-            button.addEventListener("click", function () {
-                selectDay(button.dataset.day);
-            });
-        });
-
-        selectDay(getDefaultDay());
-
-    </script>
+<body>
+    <p><a href="index.html#day">Open My day in CampusNav</a></p>
 </body>
-
 </html>
