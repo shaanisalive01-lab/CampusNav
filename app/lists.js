@@ -21,6 +21,8 @@
                 '<div class="date"><b>' + date.getDate() + "</b><span>" +
                 escapeHTML(date.toLocaleDateString("en-IN", { weekday: "short" }) + " " + date.toLocaleDateString("en-IN", { month: "short" })) + "</span></div>" +
                 '<div class="card-text"><strong>' + escapeHTML(event.name) + "</strong>" +
+                // built-in events are made up; ones a club added carry its tag instead
+                (event.tag ? "" : '<p class="sample-row"><span class="sample-tag">Sample event</span></p>') +
                 (event.description ? '<p class="about">' + escapeHTML(event.description) + "</p>" : "") + "<span>" +
                 "<span>" + icon("day") + escapeHTML(event.time) + "</span><span>" + icon("pin") + escapeHTML(event.place) + "</span>" +
                 (event.tag ? "<span>" + icon("people") + escapeHTML(event.tag) + "</span>" : "") + "</span></div></a></li>";

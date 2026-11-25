@@ -32,6 +32,7 @@
         const overrides = loadOverrides();
         const classes = getEffectiveTimetable();
         ctx.sheet.innerHTML = ctx.pageHead("Class rep") + demoNote +
+            '<p class="sample-row"><span class="sample-tag">Sample classes</span></p>' +
             (ctx.hasOwnTimetable() ? '<p class="demo">You are using your own scanned timetable, so these changes will not show in your day. They apply to the sample class timetable.</p>' : "") +
             '<ul class="changes">' + classes.map(item =>
                 classCard(ctx, item, Boolean(overrides[item.id] && Object.keys(overrides[item.id]).length), item.id === openId)).join("") + "</ul>";

@@ -459,6 +459,17 @@ progress { width: 100%; height: 8px; margin-top: 14px; accent-color: var(--blue)
 #newEvent .btn { height: 52px; }
 .field textarea { width: 100%; min-width: 0; padding: 12px; background: var(--panel-2); border: 0; border-radius: 14px; font: inherit; font-size: 1rem; color: var(--ink); resize: vertical; }
 
+/* ---------- marks on made-up information: dashed, so it never looks official ---------- */
+
+.sample-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.sample-tag { display: inline-block; padding: 2px 8px; border: 1.5px dashed var(--ink-2); border-radius: 8px; color: var(--ink-2); font-size: 0.68rem; font-weight: 600; line-height: 1.5; letter-spacing: 0; vertical-align: middle; }
+.card-text .sample-row, .next-row .sample-row { margin: 4px 0 0; }
+.card-text > .sample-row span { display: inline-block; }
+.next-row span.sample-tag { display: inline-block; }
+.arrived .sample-row { justify-content: center; margin: 8px 0 0; }
+.rail li.up .sample-tag, .cards:not(.plain) li:first-child .sample-tag { border-color: currentColor; color: inherit; }
+.prof summary .sample-tag { margin-top: 6px; }
+
 /* ---------- recentre and short messages ---------- */
 
 .recenter { position: absolute; z-index: 3; top: calc(76px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); display: grid; place-items: center; width: 54px; height: 54px; background: var(--panel); border-radius: 20px; box-shadow: var(--lift); color: var(--blue); }

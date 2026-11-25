@@ -35,9 +35,8 @@
                 row("#groups", "star", "Clubs and groups", "Join one and find where it meets") +
                 row("#cr", "edit", "Class rep", "Change a room or time, or cancel a class") +
                 row("#club-admin", "edit", "Club admin", "Publish a club event")) +
-            group("Notices", NOTICES.map(n => '<li><div class="line still"><span class="tile">' + ctx.icon("bell") + "</span><span><strong>" +
-                escapeHTML(n.name) + "</strong><small>" + escapeHTML(n.about) + "</small></span></div></li>").join("")) +
-            '<p class="note">Sample notices</p>';
+            group('Notices <span class="sample-tag">Sample</span>', NOTICES.map(n => '<li><div class="line still"><span class="tile">' + ctx.icon("bell") + "</span><span><strong>" +
+                escapeHTML(n.name) + "</strong><small>" + escapeHTML(n.about) + "</small></span></div></li>").join(""));
     }
 
     window.InfoScreen = { show };

@@ -29,11 +29,12 @@
     function show(ctx) {
         let joined = loadJoined();
         ctx.sheet.innerHTML = ctx.switcher("groups") +
+            '<p class="sample-row"><span class="sample-tag">Sample groups and member counts</span></p>' +
             '<input type="search" class="filter" id="groupSearch" aria-label="Search groups" placeholder="Search groups" autocomplete="off">' +
             ctx.chips(FILTERS, chosen, "Type of group") +
             '<div id="groupList"></div>' +
             '<a class="btn wide" href="#club-admin">' + ctx.icon("edit") + "Lead a club? Add an event</a>" +
-            '<p class="note">Sample member counts. Joining is saved on this device only.</p>';
+            '<p class="note">Joining is saved on this device only.</p>';
         const search = ctx.sheet.querySelector("#groupSearch");
         const list = ctx.sheet.querySelector("#groupList");
         search.value = typed;

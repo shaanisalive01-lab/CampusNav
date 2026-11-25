@@ -244,13 +244,23 @@
             '<a class="place" href="#go/' + id + '"><span class="tile">' + icon(look(id)) + "</span>" + name + "</a>"
         ).join("") + "</nav>";
 
+    // made-up information is always marked, so nobody takes it for the real thing
+    const sampleTag = words => '<span class="sample-tag">' + words + "</span>";
+    const sampleTags = tags => {
+        const wanted = tags.filter(Boolean);
+        return wanted.length ? '<p class="sample-row">' + wanted.map(sampleTag).join("") + "</p>" : "";
+    };
+    // the Science Block is placed by guesswork until its floor plan arrives
+    const isGuessed = id => String(id).startsWith("science-");
+
     const heading2 = (title, extra) => '<div class="section-head"><h2>' + title + "</h2>" + (extra || "") + "</div>";
 
     function heroHTML({ next, destination, route }) {
         if (!next) return '<div class="empty">' + icon("day") + "No classes ahead</div>";
         const room = roomOf(next.item);
         const leaving = /^Leave/.test(next.label);
-        return '<div class="next"><div class="next-info">' +
+        return sampleTags([!mine && "Sample timetable", isGuessed(destination) && "Sample location"]) +
+            '<div class="next"><div class="next-info">' +
             '<p class="room' + (room.length > 5 ? " word" : "") + '">' + escapeHTML(room) + "</p>" +
             '<p class="subject">' + escapeHTML(next.item.subject) + "</p></div>" + ringHTML(next) + "</div>" +
             '<ul class="facts">' +
@@ -272,7 +282,7 @@
         const todays = allClasses().filter(c => c.day === today && !c.cancelled);
         const later = todays.filter(c => minutesOf(c.endTime) > minute && !(shown && shown.id === c.id))
             .sort((a, b) => minutesOf(a.startTime) - minutesOf(b.startTime));
-        const head = heading2("Later today", '<a href="#day">My day' + icon("next") + "</a>");
+        const head = heading2("Later today" + (!mine && later.length ? " " + sampleTag("Sample") : ""), '<a href="#day">My day' + icon("next") + "</a>");
         if (!later.length) {
             const words = !todays.length ? "No classes today"
                 : shown && shown.day === today && minutesOf(shown.endTime) > minute ? "Nothing after this" : "Done for today";
@@ -320,8 +330,7 @@
             "</nav></section>" +
             (event ? "<section>" + heading2("Next event", '<a href="#events">All' + icon("next") + "</a>") +
                 '<ul class="cards plain">' + eventHTML(event) + "</ul></section>" : "") +
-            (mine ? "" : '<a class="btn wide" href="#scan">' + icon("camera") + "Scan my timetable</a>" +
-                '<p class="note">Showing a sample timetable</p>') +
+            (mine ? "" : '<a class="btn wide" href="#scan">' + icon("camera") + "Scan my timetable</a>") +
             "</div>";
     }
 
@@ -329,7 +338,9 @@
         const { next, destination, route } = upNext();
         const row = next && destination
             ? '<a class="next-row" href="#go/' + encodeURIComponent(destination) + '"><span><small>' + escapeHTML(next.label) +
-              "</small><b>" + escapeHTML(roomOf(next.item)) + "</b></span><i>Go" + icon("next") + "</i></a>"
+              "</small><b>" + escapeHTML(roomOf(next.item)) + "</b>" +
+              sampleTags([!mine && "Sample timetable", isGuessed(destination) && "Sample location"]) +
+              "</span><i>Go" + icon("next") + "</i></a>"
             : "";
         sheet.innerHTML = '<h1 class="sr-only">Campus map</h1>' + row + placesHTML();
         drawRoute(route, destination);
@@ -359,7 +370,7 @@
 
     // a screen for when there is nothing to walk
     function showNoRoute(destination, glyph, words, canChange) {
-        sheet.innerHTML = (canChange ? routeOptionsHTML() : "") + '<div class="empty">' + icon(glyph) + escapeHTML(words) +
+        sheet.innerHTML = (canChange ? routeOptionsHTML() : "") + sampleTags([isGuessed(destination) && "Sample location"]) + '<div class="empty">' + icon(glyph) + escapeHTML(words) +
             '<a class="btn primary" style="padding:0 24px" href="' + escapeHTML(backTo) + '">Back</a></div>';
         bindRouteOptions(destination);
         keepAwake(false);
@@ -405,7 +416,8 @@
                 '<div class="arrived" role="status"><div class="tick">' + icon("check") + "</div>" +
                 "<h1>You're here</h1>" +
                 '<p class="arrived-room">' + escapeHTML(name) + "</p>" +
-                (here ? "<p>" + escapeHTML(here) + "</p>" : "") + "</div>" +
+                (here ? "<p>" + escapeHTML(here) + "</p>" : "") +
+                sampleTags([here && !mine && "Sample timetable", isGuessed(destination) && "Sample location"]) + "</div>" +
                 '<div class="controls two"><button class="btn" id="prev" aria-label="Previous step" title="Previous step">' + icon("back") + "</button>" +
                 '<a class="btn primary" href="#home">Done</a></div>';
             $("#prev").addEventListener("click", () => move(-1));
@@ -422,6 +434,7 @@
         sheet.innerHTML =
             '<h1 class="sr-only">Directions to ' + escapeHTML(name) + "</h1>" +
             (stepIndex === 0 ? routeOptionsHTML() : "") +
+            sampleTags([(isGuessed(destination) || isGuessed(startAt)) && "Sample location: don't follow on campus"]) +
             '<div class="progress-row"><div class="dots" aria-hidden="true">' +
             steps.map((_, i) => "<i" + (i <= stepIndex ? ' class="done"' : "") + "></i>").join("") + "</div>" +
             '<p class="left">' + (left === 1 ? "Last step" : left + " steps left") + "</p></div>" +
@@ -456,6 +469,7 @@
                 "</span></div><i>" + icon(SUBJECT_LOOK(c.subject)) + "</i>" + (isPlace(c.location) ? "</a>" : "</div>") + "</li>";
         });
         sheet.innerHTML = '<h1 class="title">' + (day === today ? "Today" : day) + "</h1>" +
+            sampleTags([!mine && "Sample timetable"]) +
             '<div class="days" role="group" aria-label="Day">' + DAYS.slice(1).map(name => {
                 const count = allClasses().filter(c => c.day === name).length;
                 return '<button type="button" data-day="' + name + '"' + (name === today ? ' class="today"' : "") +
@@ -464,8 +478,7 @@
             }).join("") + "</div>" +
             (classes.length ? '<ul class="rail">' + rows + "</ul>" : '<div class="empty">' + icon("cup") + "Free day</div>") +
             '<a class="btn primary wide" href="#scan">' + icon("camera") + (mine ? "Scan again" : "Scan my timetable") + "</a>" +
-            (mine ? '<button type="button" class="btn wide" id="forget">Remove my timetable</button>'
-                : '<p class="note">Showing a sample timetable</p>') +
+            (mine ? '<button type="button" class="btn wide" id="forget">Remove my timetable</button>' : "") +
             '<a class="btn plain wide" href="#cr">' + icon("edit") + "Class rep: change a class</a>";
         if ($("#forget")) $("#forget").addEventListener("click", () => {
             const removed = mine;

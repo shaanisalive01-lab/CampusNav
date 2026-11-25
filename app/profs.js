@@ -17,7 +17,8 @@
         const fact = (glyph, words) => "<li>" + ctx.icon(glyph) + escapeHTML(words) + "</li>";
         return '<li class="prof"><details' + (open ? " open" : "") + ">" +
             '<summary><span class="avatar" aria-hidden="true">' + escapeHTML(initials(p.name)) + "</span>" +
-            "<span><strong>" + escapeHTML(p.name) + "</strong><small>" + escapeHTML(p.department) + "</small></span></summary>" +
+            "<span><strong>" + escapeHTML(p.name) + "</strong><small>" + escapeHTML(p.department) + "</small>" +
+            (window.PROFESSORS_ARE_SAMPLES ? '<span class="sample-tag">Sample</span>' : "") + "</span></summary>" +
             '<div class="prof-body"><ul class="facts">' +
             fact("door", mapped ? ctx.shortName(p.room) : "Room not mapped") +
             p.clubs.map(club => fact("star", "Leads " + club)).join("") +
@@ -41,9 +42,9 @@
     function show(ctx, selected) {
         ctx.sheet.innerHTML =
             '<h1 class="title">Professors</h1>' +
+            (window.PROFESSORS_ARE_SAMPLES ? '<p class="sample-row"><span class="sample-tag">Sample entries, not real people</span></p>' : "") +
             '<input type="search" class="filter" aria-label="Search professors" placeholder="Name, department or club" autocomplete="off">' +
-            '<ul class="people" id="profList"></ul>' +
-            (window.PROFESSORS_ARE_SAMPLES ? '<p class="note">Sample entries, not real people</p>' : "");
+            '<ul class="people" id="profList"></ul>';
         const filter = ctx.sheet.querySelector(".filter");
         const list = ctx.sheet.querySelector("#profList");
         // a professor picked from search must not be hidden by an old filter
